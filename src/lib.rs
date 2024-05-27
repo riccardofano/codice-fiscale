@@ -7,7 +7,7 @@ const CONSONANTS: [char; 22] = [
     'Y', 'Z', ' ',
 ];
 
-#[derive(Default)]
+#[derive(Default, PartialEq, Eq)]
 enum Gender {
     #[default]
     Male,
@@ -47,7 +47,11 @@ impl Subject {
     fn birth_date_code(&self) -> String {
         let mut year = self.birth_date.year().to_string();
         let month = MONTH_CODES[self.birth_date.month0() as usize];
-        let day = self.birth_date.day();
+        let mut day = self.birth_date.day();
+
+        if self.gender == Gender::Female {
+            day += 40;
+        }
 
         format!(
             "{year_1}{year_0}{month}{day:02}",
@@ -167,5 +171,16 @@ mod tests {
         };
 
         assert_eq!(&sub.birth_date_code(), "24T05");
+    }
+
+    #[test]
+    fn test_birth_date_female() {
+        let sub = Subject {
+            birth_date: NaiveDate::from_ymd_opt(2024, 12, 5).unwrap(),
+            gender: Gender::Female,
+            ..Default::default()
+        };
+
+        assert_eq!(&sub.birth_date_code(), "24T45");
     }
 }
