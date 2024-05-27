@@ -1,0 +1,1306 @@
+{
+  "AFGHANISTAN|EE": {
+    "active": true,
+    "code": "Z200"
+  },
+  "ALBANIA|EE": {
+    "active": true,
+    "code": "Z100"
+  },
+  "ALGERIA|EE": {
+    "active": true,
+    "code": "Z301"
+  },
+  "ANDORRA|EE": {
+    "active": true,
+    "code": "Z101"
+  },
+  "ANGOLA|EE": {
+    "active": true,
+    "code": "Z302"
+  },
+  "ANTIGUA-AND-BARBUDA|EE": {
+    "active": true,
+    "code": "Z532"
+  },
+  "ANTIGUA-E-BARBUDA|EE": {
+    "active": true,
+    "code": "Z532"
+  },
+  "ARABIA-SAUDITA|EE": {
+    "active": true,
+    "code": "Z203"
+  },
+  "SAUDI-ARABIA|EE": {
+    "active": true,
+    "code": "Z203"
+  },
+  "ARGENTINA|EE": {
+    "active": true,
+    "code": "Z600"
+  },
+  "ARMENIA|EE": {
+    "active": true,
+    "code": "Z252"
+  },
+  "ARUBA|EE": {
+    "active": true,
+    "code": "Z501"
+  },
+  "AUSTRALIA|EE": {
+    "active": true,
+    "code": "Z700"
+  },
+  "AUSTRIA|EE": {
+    "active": true,
+    "code": "Z102"
+  },
+  "AZERBAIGIAN|EE": {
+    "active": true,
+    "code": "Z253"
+  },
+  "AZERBAIJAN|EE": {
+    "active": true,
+    "code": "Z253"
+  },
+  "BAHAMAS|EE": {
+    "active": true,
+    "code": "Z502"
+  },
+  "BAHRAIN|EE": {
+    "active": true,
+    "code": "Z204"
+  },
+  "BAHREIN|EE": {
+    "active": true,
+    "code": "Z204"
+  },
+  "BANGLADESH|EE": {
+    "active": true,
+    "code": "Z249"
+  },
+  "BARBADOS|EE": {
+    "active": true,
+    "code": "Z522"
+  },
+  "BELGIO|EE": {
+    "active": true,
+    "code": "Z103"
+  },
+  "BELGIUM|EE": {
+    "active": true,
+    "code": "Z103"
+  },
+  "BELIZE|EE": {
+    "active": true,
+    "code": "Z512"
+  },
+  "BENIN|EE": {
+    "active": true,
+    "code": "Z314"
+  },
+  "BENIN-EX-DAHOMEY|EE": {
+    "active": true,
+    "code": "Z314"
+  },
+  "BERMUDA|EE": {
+    "active": true,
+    "code": "Z400"
+  },
+  "BHUTAN|EE": {
+    "active": true,
+    "code": "Z205"
+  },
+  "BELARUS|EE": {
+    "active": true,
+    "code": "Z139"
+  },
+  "BIELORUSSIA|EE": {
+    "active": true,
+    "code": "Z139"
+  },
+  "BOLIVIA|EE": {
+    "active": true,
+    "code": "Z601"
+  },
+  "BOLIVIA-PLURINATIONAL-STATE-OF|EE": {
+    "active": true,
+    "code": "Z601"
+  },
+  "BOSNIA-AND-HERZEGOVINA|EE": {
+    "active": true,
+    "code": "Z153"
+  },
+  "BOSNIA-ERZEGOVINA|EE": {
+    "active": true,
+    "code": "Z153"
+  },
+  "BOTSWANA|EE": {
+    "active": true,
+    "code": "Z358"
+  },
+  "BRASILE|EE": {
+    "active": true,
+    "code": "Z602"
+  },
+  "BRAZIL|EE": {
+    "active": true,
+    "code": "Z602"
+  },
+  "BRUNEI|EE": {
+    "active": true,
+    "code": "Z207"
+  },
+  "BRUNEI-DARUSSALAM|EE": {
+    "active": true,
+    "code": "Z207"
+  },
+  "BULGARIA|EE": {
+    "active": true,
+    "code": "Z104"
+  },
+  "BURKINA-FASO|EE": {
+    "active": true,
+    "code": "Z354"
+  },
+  "BURKINA-FASO-EX-ALTO-VOLTA|EE": {
+    "active": true,
+    "code": "Z354"
+  },
+  "BURUNDI|EE": {
+    "active": true,
+    "code": "Z305"
+  },
+  "CAMBODIA|EE": {
+    "active": true,
+    "code": "Z208"
+  },
+  "CAMBOGIA|EE": {
+    "active": true,
+    "code": "Z208"
+  },
+  "CAMEROON|EE": {
+    "active": true,
+    "code": "Z306"
+  },
+  "CAMERUN|EE": {
+    "active": true,
+    "code": "Z306"
+  },
+  "CANADA|EE": {
+    "active": true,
+    "code": "Z401"
+  },
+  "CAPE-VERDE|EE": {
+    "active": true,
+    "code": "Z307"
+  },
+  "CAPO-VERDE|EE": {
+    "active": true,
+    "code": "Z307"
+  },
+  "CHAD|EE": {
+    "active": true,
+    "code": "Z309"
+  },
+  "CIAD|EE": {
+    "active": true,
+    "code": "Z309"
+  },
+  "CHILE|EE": {
+    "active": true,
+    "code": "Z603"
+  },
+  "CILE|EE": {
+    "active": true,
+    "code": "Z603"
+  },
+  "CIPRO|EE": {
+    "active": true,
+    "code": "Z211"
+  },
+  "CYPRUS|EE": {
+    "active": true,
+    "code": "Z211"
+  },
+  "COLOMBIA|EE": {
+    "active": true,
+    "code": "Z604"
+  },
+  "COMORE|EE": {
+    "active": true,
+    "code": "Z310"
+  },
+  "COMOROS|EE": {
+    "active": true,
+    "code": "Z310"
+  },
+  "CONGO|EE": {
+    "active": true,
+    "code": "Z311"
+  },
+  "CONGO-REPUBBLICA-DEL|EE": {
+    "active": true,
+    "code": "Z311"
+  },
+  "COSTA-D-AVORIO|EE": {
+    "active": true,
+    "code": "Z313"
+  },
+  "COTE-D-IVOIRE|EE": {
+    "active": true,
+    "code": "Z313"
+  },
+  "COSTA-RICA|EE": {
+    "active": true,
+    "code": "Z503"
+  },
+  "CROATIA|EE": {
+    "active": true,
+    "code": "Z149"
+  },
+  "CROAZIA|EE": {
+    "active": true,
+    "code": "Z149"
+  },
+  "CUBA|EE": {
+    "active": true,
+    "code": "Z504"
+  },
+  "DANIMARCA|EE": {
+    "active": true,
+    "code": "Z107"
+  },
+  "DENMARK|EE": {
+    "active": true,
+    "code": "Z107"
+  },
+  "DOMINICA|EE": {
+    "active": true,
+    "code": "Z526"
+  },
+  "ECUADOR|EE": {
+    "active": true,
+    "code": "Z605"
+  },
+  "EGITTO|EE": {
+    "active": true,
+    "code": "Z336"
+  },
+  "EGYPT|EE": {
+    "active": true,
+    "code": "Z336"
+  },
+  "EL-SALVADOR|EE": {
+    "active": true,
+    "code": "Z506"
+  },
+  "EMIRATI-ARABI-UNITI|EE": {
+    "active": true,
+    "code": "Z215"
+  },
+  "UNITED-ARAB-EMIRATES|EE": {
+    "active": true,
+    "code": "Z215"
+  },
+  "ERITREA|EE": {
+    "active": true,
+    "code": "Z368"
+  },
+  "ESTONIA|EE": {
+    "active": true,
+    "code": "Z144"
+  },
+  "ESWATINI|EE": {
+    "active": true,
+    "code": "Z349"
+  },
+  "SWAZILAND|EE": {
+    "active": true,
+    "code": "Z349"
+  },
+  "ETHIOPIA|EE": {
+    "active": true,
+    "code": "Z315"
+  },
+  "ETIOPIA|EE": {
+    "active": true,
+    "code": "Z315"
+  },
+  "FEDERAZIONE-RUSSA|EE": {
+    "active": true,
+    "code": "Z154"
+  },
+  "RUSSA-FEDERAZIONE|EE": {
+    "active": true,
+    "code": "Z154"
+  },
+  "RUSSIAN-FEDERATION|EE": {
+    "active": true,
+    "code": "Z154"
+  },
+  "FIGI|EE": {
+    "active": true,
+    "code": "Z704"
+  },
+  "FIJI|EE": {
+    "active": true,
+    "code": "Z704"
+  },
+  "FILIPPINE|EE": {
+    "active": true,
+    "code": "Z216"
+  },
+  "PHILIPPINES|EE": {
+    "active": true,
+    "code": "Z216"
+  },
+  "FINLAND|EE": {
+    "active": true,
+    "code": "Z109"
+  },
+  "FINLANDIA|EE": {
+    "active": true,
+    "code": "Z109"
+  },
+  "FRANCE|EE": {
+    "active": true,
+    "code": "Z110"
+  },
+  "FRANCIA|EE": {
+    "active": true,
+    "code": "Z110"
+  },
+  "GABON|EE": {
+    "active": true,
+    "code": "Z316"
+  },
+  "GAMBIA|EE": {
+    "active": true,
+    "code": "Z317"
+  },
+  "GEORGIA|EE": {
+    "active": true,
+    "code": "Z254"
+  },
+  "GERMANIA|EE": {
+    "active": true,
+    "code": "Z112"
+  },
+  "GERMANY|EE": {
+    "active": true,
+    "code": "Z112"
+  },
+  "GHANA|EE": {
+    "active": true,
+    "code": "Z318"
+  },
+  "GIAMAICA|EE": {
+    "active": true,
+    "code": "Z507"
+  },
+  "JAMAICA|EE": {
+    "active": true,
+    "code": "Z507"
+  },
+  "GIAPPONE|EE": {
+    "active": true,
+    "code": "Z219"
+  },
+  "JAPAN|EE": {
+    "active": true,
+    "code": "Z219"
+  },
+  "DJIBOUTI|EE": {
+    "active": true,
+    "code": "Z361"
+  },
+  "GIBUTI|EE": {
+    "active": true,
+    "code": "Z361"
+  },
+  "GIORDANIA|EE": {
+    "active": true,
+    "code": "Z220"
+  },
+  "JORDAN|EE": {
+    "active": true,
+    "code": "Z220"
+  },
+  "GRECIA|EE": {
+    "active": true,
+    "code": "Z115"
+  },
+  "GREECE|EE": {
+    "active": true,
+    "code": "Z115"
+  },
+  "GRENADA|EE": {
+    "active": true,
+    "code": "Z524"
+  },
+  "GUATEMALA|EE": {
+    "active": true,
+    "code": "Z509"
+  },
+  "GUINEA|EE": {
+    "active": true,
+    "code": "Z319"
+  },
+  "GUINEA-BISSAU|EE": {
+    "active": true,
+    "code": "Z320"
+  },
+  "EQUATORIAL-GUINEA|EE": {
+    "active": true,
+    "code": "Z321"
+  },
+  "GUINEA-EQUATORIALE|EE": {
+    "active": true,
+    "code": "Z321"
+  },
+  "GUYANA|EE": {
+    "active": true,
+    "code": "Z606"
+  },
+  "HAITI|EE": {
+    "active": true,
+    "code": "Z510"
+  },
+  "HONDURAS|EE": {
+    "active": true,
+    "code": "Z511"
+  },
+  "INDIA|EE": {
+    "active": true,
+    "code": "Z222"
+  },
+  "INDONESIA|EE": {
+    "active": true,
+    "code": "Z223"
+  },
+  "IRAN|EE": {
+    "active": true,
+    "code": "Z224"
+  },
+  "IRAN-ISLAMIC-REPUBLIC-OF|EE": {
+    "active": true,
+    "code": "Z224"
+  },
+  "IRAN-REPUBBLICA-ISLAMICA-DEL|EE": {
+    "active": true,
+    "code": "Z224"
+  },
+  "IRAQ|EE": {
+    "active": true,
+    "code": "Z225"
+  },
+  "IRELAND|EE": {
+    "active": true,
+    "code": "Z116"
+  },
+  "IRLANDA|EE": {
+    "active": true,
+    "code": "Z116"
+  },
+  "ICELAND|EE": {
+    "active": true,
+    "code": "Z117"
+  },
+  "ISLANDA|EE": {
+    "active": true,
+    "code": "Z117"
+  },
+  "ISOLE-CAYMAN|EE": {
+    "active": true,
+    "code": "Z530"
+  },
+  "ISOLE-COOK|EE": {
+    "active": true,
+    "code": "Z703"
+  },
+  "ISOLE-FAER-OER|EE": {
+    "active": true,
+    "code": "Z108"
+  },
+  "ISOLE-MARSHALL|EE": {
+    "active": true,
+    "code": "Z711"
+  },
+  "MARSHALL-ISLANDS|EE": {
+    "active": true,
+    "code": "Z711"
+  },
+  "MARSHALL-ISOLE|EE": {
+    "active": true,
+    "code": "Z711"
+  },
+  "ISOLE-SALOMONE|EE": {
+    "active": true,
+    "code": "Z724"
+  },
+  "SALOMONE-ISOLE|EE": {
+    "active": true,
+    "code": "Z724"
+  },
+  "SOLOMON-ISLANDS|EE": {
+    "active": true,
+    "code": "Z724"
+  },
+  "ISOLE-TURKS-E-CAICOS|EE": {
+    "active": true,
+    "code": "Z519"
+  },
+  "ISOLE-VERGINI-BRITANNICHE|EE": {
+    "active": true,
+    "code": "Z525"
+  },
+  "ISOLE-WALLIS-E-FUTUNA|EE": {
+    "active": true,
+    "code": "Z729"
+  },
+  "ISRAEL|EE": {
+    "active": true,
+    "code": "Z226"
+  },
+  "ISRAELE|EE": {
+    "active": true,
+    "code": "Z226"
+  },
+  "KAZAKHSTAN|EE": {
+    "active": true,
+    "code": "Z255"
+  },
+  "KENYA|EE": {
+    "active": true,
+    "code": "Z322"
+  },
+  "KIRGHIZISTAN|EE": {
+    "active": true,
+    "code": "Z256"
+  },
+  "KYRGYZSTAN|EE": {
+    "active": true,
+    "code": "Z256"
+  },
+  "KIRIBATI|EE": {
+    "active": true,
+    "code": "Z731"
+  },
+  "KOSOVO|EE": {
+    "active": true,
+    "code": "Z160"
+  },
+  "KUWAIT|EE": {
+    "active": true,
+    "code": "Z227"
+  },
+  "LAO-PEOPLE-S-DEMOCRATIC-REPUBLIC|EE": {
+    "active": true,
+    "code": "Z228"
+  },
+  "LAOS|EE": {
+    "active": true,
+    "code": "Z228"
+  },
+  "LESOTHO|EE": {
+    "active": true,
+    "code": "Z359"
+  },
+  "LATVIA|EE": {
+    "active": true,
+    "code": "Z145"
+  },
+  "LETTONIA|EE": {
+    "active": true,
+    "code": "Z145"
+  },
+  "LEBANON|EE": {
+    "active": true,
+    "code": "Z229"
+  },
+  "LIBANO|EE": {
+    "active": true,
+    "code": "Z229"
+  },
+  "LIBERIA|EE": {
+    "active": true,
+    "code": "Z325"
+  },
+  "LIBIA|EE": {
+    "active": true,
+    "code": "Z326"
+  },
+  "LIBYAN-ARAB-JAMAHIRIYA|EE": {
+    "active": true,
+    "code": "Z326"
+  },
+  "LIECHTENSTEIN|EE": {
+    "active": true,
+    "code": "Z119"
+  },
+  "LITHUANIA|EE": {
+    "active": true,
+    "code": "Z146"
+  },
+  "LITUANIA|EE": {
+    "active": true,
+    "code": "Z146"
+  },
+  "LUSSEMBURGO|EE": {
+    "active": true,
+    "code": "Z120"
+  },
+  "LUXEMBOURG|EE": {
+    "active": true,
+    "code": "Z120"
+  },
+  "MACEDONIA-DEL-NORD|EE": {
+    "active": true,
+    "code": "Z148"
+  },
+  "MACEDONIA-FYROM|EE": {
+    "active": true,
+    "code": "Z148"
+  },
+  "MACEDONIA-REPUBBLICA-DI|EE": {
+    "active": true,
+    "code": "Z148"
+  },
+  "MADAGASCAR|EE": {
+    "active": true,
+    "code": "Z327"
+  },
+  "MALAWI|EE": {
+    "active": true,
+    "code": "Z328"
+  },
+  "MALAYSIA|EE": {
+    "active": true,
+    "code": "Z247"
+  },
+  "MALDIVE|EE": {
+    "active": true,
+    "code": "Z232"
+  },
+  "MALDIVES|EE": {
+    "active": true,
+    "code": "Z232"
+  },
+  "MALI|EE": {
+    "active": true,
+    "code": "Z329"
+  },
+  "MALTA|EE": {
+    "active": true,
+    "code": "Z121"
+  },
+  "MAROCCO|EE": {
+    "active": true,
+    "code": "Z330"
+  },
+  "MOROCCO|EE": {
+    "active": true,
+    "code": "Z330"
+  },
+  "MARTINICA|EE": {
+    "active": true,
+    "code": "Z513"
+  },
+  "MAURITANIA|EE": {
+    "active": true,
+    "code": "Z331"
+  },
+  "MAURITIUS|EE": {
+    "active": true,
+    "code": "Z332"
+  },
+  "MAYOTTE|EE": {
+    "active": true,
+    "code": "Z360"
+  },
+  "MESSICO|EE": {
+    "active": true,
+    "code": "Z514"
+  },
+  "MEXICO|EE": {
+    "active": true,
+    "code": "Z514"
+  },
+  "MOLDOVA|EE": {
+    "active": true,
+    "code": "Z140"
+  },
+  "MOLDOVA-REPUBLIC-OF|EE": {
+    "active": true,
+    "code": "Z140"
+  },
+  "MONACO|EE": {
+    "active": true,
+    "code": "Z123"
+  },
+  "MONGOLIA|EE": {
+    "active": true,
+    "code": "Z233"
+  },
+  "MONTENEGRO|EE": {
+    "active": true,
+    "code": "Z159"
+  },
+  "MOZAMBICO|EE": {
+    "active": true,
+    "code": "Z333"
+  },
+  "MOZAMBIQUE|EE": {
+    "active": true,
+    "code": "Z333"
+  },
+  "MYANMAR|EE": {
+    "active": true,
+    "code": "Z206"
+  },
+  "MYANMAR-EX-BIRMANIA|EE": {
+    "active": true,
+    "code": "Z206"
+  },
+  "NAMIBIA|EE": {
+    "active": true,
+    "code": "Z300"
+  },
+  "NAURU|EE": {
+    "active": true,
+    "code": "Z713"
+  },
+  "NEPAL|EE": {
+    "active": true,
+    "code": "Z234"
+  },
+  "NICARAGUA|EE": {
+    "active": true,
+    "code": "Z515"
+  },
+  "NIGER|EE": {
+    "active": true,
+    "code": "Z334"
+  },
+  "NIGERIA|EE": {
+    "active": true,
+    "code": "Z335"
+  },
+  "NORVEGIA|EE": {
+    "active": true,
+    "code": "Z125"
+  },
+  "NORWAY|EE": {
+    "active": true,
+    "code": "Z125"
+  },
+  "NEW-ZEALAND|EE": {
+    "active": true,
+    "code": "Z719"
+  },
+  "NUOVA-ZELANDA|EE": {
+    "active": true,
+    "code": "Z719"
+  },
+  "OMAN|EE": {
+    "active": true,
+    "code": "Z235"
+  },
+  "NETHERLANDS|EE": {
+    "active": true,
+    "code": "Z126"
+  },
+  "PAESI-BASSI|EE": {
+    "active": true,
+    "code": "Z126"
+  },
+  "PAKISTAN|EE": {
+    "active": true,
+    "code": "Z236"
+  },
+  "PALAU|EE": {
+    "active": true,
+    "code": "Z734"
+  },
+  "PANAMA|EE": {
+    "active": true,
+    "code": "Z516"
+  },
+  "PAPUA-NEW-GUINEA|EE": {
+    "active": true,
+    "code": "Z730"
+  },
+  "PAPUA-NUOVA-GUINEA|EE": {
+    "active": true,
+    "code": "Z730"
+  },
+  "PARAGUAY|EE": {
+    "active": true,
+    "code": "Z610"
+  },
+  "PERU|EE": {
+    "active": true,
+    "code": "Z611"
+  },
+  "POLAND|EE": {
+    "active": true,
+    "code": "Z127"
+  },
+  "POLONIA|EE": {
+    "active": true,
+    "code": "Z127"
+  },
+  "PORTOGALLO|EE": {
+    "active": true,
+    "code": "Z128"
+  },
+  "PORTUGAL|EE": {
+    "active": true,
+    "code": "Z128"
+  },
+  "QATAR|EE": {
+    "active": true,
+    "code": "Z237"
+  },
+  "REGNO-UNITO|EE": {
+    "active": true,
+    "code": "Z114"
+  },
+  "UNITED-KINGDOM|EE": {
+    "active": true,
+    "code": "Z114"
+  },
+  "CECA-REPUBBLICA|EE": {
+    "active": true,
+    "code": "Z156"
+  },
+  "CZECH-REPUBLIC|EE": {
+    "active": true,
+    "code": "Z156"
+  },
+  "REPUBBLICA-CECA|EE": {
+    "active": true,
+    "code": "Z156"
+  },
+  "CENTRAFRICANA-REPUBBLICA|EE": {
+    "active": true,
+    "code": "Z308"
+  },
+  "CENTRAL-AFRICAN-REPUBLIC|EE": {
+    "active": true,
+    "code": "Z308"
+  },
+  "REPUBBLICA-CENTRAFRICANA|EE": {
+    "active": true,
+    "code": "Z308"
+  },
+  "CONGO-REPUBBLICA-DEMOCRATICA-DEL-EX-ZAIRE|EE": {
+    "active": true,
+    "code": "Z312"
+  },
+  "CONGO-THE-DEMOCRATIC-REPUBLIC-OF-THE|EE": {
+    "active": true,
+    "code": "Z312"
+  },
+  "REPUBBLICA-DEMOCRATICA-DEL-CONGO|EE": {
+    "active": true,
+    "code": "Z312"
+  },
+  "COREA-REPUBBLICA-COREA-DEL-SUD|EE": {
+    "active": true,
+    "code": "Z213"
+  },
+  "KOREA-REPUBLIC-OF|EE": {
+    "active": true,
+    "code": "Z213"
+  },
+  "REPUBBLICA-DI-COREA|EE": {
+    "active": true,
+    "code": "Z213"
+  },
+  "DOMINICAN-REPUBLIC|EE": {
+    "active": true,
+    "code": "Z505"
+  },
+  "DOMINICANA-REPUBBLICA|EE": {
+    "active": true,
+    "code": "Z505"
+  },
+  "REPUBBLICA-DOMINICANA|EE": {
+    "active": true,
+    "code": "Z505"
+  },
+  "CHINA|EE": {
+    "active": true,
+    "code": "Z210"
+  },
+  "CINESE-REPUBBLICA-POPOLARE|EE": {
+    "active": true,
+    "code": "Z210"
+  },
+  "REPUBBLICA-POPOLARE-CINESE|EE": {
+    "active": true,
+    "code": "Z210"
+  },
+  "COREA-REPUBBLICA-POPOLARE-DEMOCRATICA-COREA-DEL-NORD|EE": {
+    "active": true,
+    "code": "Z214"
+  },
+  "KOREA-DEMOCRATIC-PEOPLE-S-REPUBLIC-OF|EE": {
+    "active": true,
+    "code": "Z214"
+  },
+  "REPUBBLICA-POPOLARE-DEMOCRATICA-DI-COREA|EE": {
+    "active": true,
+    "code": "Z214"
+  },
+  "ROMANIA|EE": {
+    "active": true,
+    "code": "Z129"
+  },
+  "RUANDA|EE": {
+    "active": true,
+    "code": "Z338"
+  },
+  "RWANDA|EE": {
+    "active": true,
+    "code": "Z338"
+  },
+  "SAINT-KITTS-AND-NEVIS|EE": {
+    "active": true,
+    "code": "Z533"
+  },
+  "SAINT-KITTS-E-NEVIS|EE": {
+    "active": true,
+    "code": "Z533"
+  },
+  "SAINT-LUCIA|EE": {
+    "active": true,
+    "code": "Z527"
+  },
+  "SAINT-PIERRE-E-MIQUELON|EE": {
+    "active": true,
+    "code": "Z403"
+  },
+  "SAINT-VINCENT-AND-THE-GRENADINES|EE": {
+    "active": true,
+    "code": "Z528"
+  },
+  "SAINT-VINCENT-E-GRENADINE|EE": {
+    "active": true,
+    "code": "Z528"
+  },
+  "SAMOA|EE": {
+    "active": true,
+    "code": "Z726"
+  },
+  "SAN-MARINO|EE": {
+    "active": true,
+    "code": "Z130"
+  },
+  "SANT-ELENA|EE": {
+    "active": true,
+    "code": "Z340"
+  },
+  "SAO-TOME-AND-PRINCIPE|EE": {
+    "active": true,
+    "code": "Z341"
+  },
+  "SAO-TOME-E-PRINCIPE|EE": {
+    "active": true,
+    "code": "Z341"
+  },
+  "SENEGAL|EE": {
+    "active": true,
+    "code": "Z343"
+  },
+  "SERBIA|EE": {
+    "active": true,
+    "code": "Z158"
+  },
+  "SERBIA-REPUBBLICA-DI|EE": {
+    "active": true,
+    "code": "Z158"
+  },
+  "SEYCHELLES|EE": {
+    "active": true,
+    "code": "Z342"
+  },
+  "SIERRA-LEONE|EE": {
+    "active": true,
+    "code": "Z344"
+  },
+  "SINGAPORE|EE": {
+    "active": true,
+    "code": "Z248"
+  },
+  "SIRIA|EE": {
+    "active": true,
+    "code": "Z240"
+  },
+  "SYRIAN-ARAB-REPUBLIC|EE": {
+    "active": true,
+    "code": "Z240"
+  },
+  "SLOVACCHIA|EE": {
+    "active": true,
+    "code": "Z155"
+  },
+  "SLOVAKIA|EE": {
+    "active": true,
+    "code": "Z155"
+  },
+  "SLOVENIA|EE": {
+    "active": true,
+    "code": "Z150"
+  },
+  "SOMALIA|EE": {
+    "active": true,
+    "code": "Z345"
+  },
+  "SPAGNA|EE": {
+    "active": true,
+    "code": "Z131"
+  },
+  "SPAIN|EE": {
+    "active": true,
+    "code": "Z131"
+  },
+  "SRI-LANKA|EE": {
+    "active": true,
+    "code": "Z209"
+  },
+  "SRI-LANKA-EX-CEYLON|EE": {
+    "active": true,
+    "code": "Z209"
+  },
+  "MICRONESIA-FEDERATED-STATES-OF|EE": {
+    "active": true,
+    "code": "Z735"
+  },
+  "MICRONESIA-STATI-FEDERATI|EE": {
+    "active": true,
+    "code": "Z735"
+  },
+  "STATI-FEDERATI-DI-MICRONESIA|EE": {
+    "active": true,
+    "code": "Z735"
+  },
+  "STATI-UNITI-D-AMERICA|EE": {
+    "active": true,
+    "code": "Z404"
+  },
+  "UNITED-STATES|EE": {
+    "active": true,
+    "code": "Z404"
+  },
+  "STATO-CITTA-DEL-VATICANO|EE": {
+    "active": true,
+    "code": "Z106"
+  },
+  "STATO-DELLA-CITTA-DEL-VATICANO|EE": {
+    "active": true,
+    "code": "Z106"
+  },
+  "VATICAN-CITY-STATE|EE": {
+    "active": true,
+    "code": "Z106"
+  },
+  "SOUTH-AFRICA|EE": {
+    "active": true,
+    "code": "Z347"
+  },
+  "SUD-AFRICA|EE": {
+    "active": true,
+    "code": "Z347"
+  },
+  "SOUTH-SUDAN-REPUBLIC-OF|EE": {
+    "active": true,
+    "code": "Z907"
+  },
+  "SUD-SUDAN|EE": {
+    "active": true,
+    "code": "Z907"
+  },
+  "SUD-SUDAN-REPUBBLICA-DEL|EE": {
+    "active": true,
+    "code": "Z907"
+  },
+  "SUDAN|EE": {
+    "active": true,
+    "code": "Z348"
+  },
+  "SURINAME|EE": {
+    "active": true,
+    "code": "Z608"
+  },
+  "SVEZIA|EE": {
+    "active": true,
+    "code": "Z132"
+  },
+  "SWEDEN|EE": {
+    "active": true,
+    "code": "Z132"
+  },
+  "SVIZZERA|EE": {
+    "active": true,
+    "code": "Z133"
+  },
+  "SWITZERLAND|EE": {
+    "active": true,
+    "code": "Z133"
+  },
+  "TAGIKISTAN|EE": {
+    "active": true,
+    "code": "Z257"
+  },
+  "TAJIKISTAN|EE": {
+    "active": true,
+    "code": "Z257"
+  },
+  "TAIWAN|EE": {
+    "active": true,
+    "code": "Z217"
+  },
+  "TAIWAN-EX-FORMOSA|EE": {
+    "active": true,
+    "code": "Z217"
+  },
+  "TAIWAN-PROVINCE-OF-CHINA|EE": {
+    "active": true,
+    "code": "Z217"
+  },
+  "TANZANIA|EE": {
+    "active": true,
+    "code": "Z357"
+  },
+  "TANZANIA-UNITED-REPUBLIC-OF|EE": {
+    "active": true,
+    "code": "Z357"
+  },
+  "PALESTINIAN-TERRITORY-OCCUPIED|EE": {
+    "active": true,
+    "code": "Z161"
+  },
+  "TERRITORI-DELL-AUTONOMIA-PALESTINESE|EE": {
+    "active": true,
+    "code": "Z161"
+  },
+  "THAILAND|EE": {
+    "active": true,
+    "code": "Z241"
+  },
+  "THAILANDIA|EE": {
+    "active": true,
+    "code": "Z241"
+  },
+  "EAST-TIMOR|EE": {
+    "active": true,
+    "code": "Z242"
+  },
+  "TIMOR-ORIENTALE|EE": {
+    "active": true,
+    "code": "Z242"
+  },
+  "TOGO|EE": {
+    "active": true,
+    "code": "Z351"
+  },
+  "TONGA|EE": {
+    "active": true,
+    "code": "Z728"
+  },
+  "TRINIDAD-AND-TOBAGO|EE": {
+    "active": true,
+    "code": "Z612"
+  },
+  "TRINIDAD-E-TOBAGO|EE": {
+    "active": true,
+    "code": "Z612"
+  },
+  "TUNISIA|EE": {
+    "active": true,
+    "code": "Z352"
+  },
+  "TURCHIA|EE": {
+    "active": true,
+    "code": "Z243"
+  },
+  "TURKEY|EE": {
+    "active": true,
+    "code": "Z243"
+  },
+  "TURKMENISTAN|EE": {
+    "active": true,
+    "code": "Z258"
+  },
+  "TUVALU|EE": {
+    "active": true,
+    "code": "Z732"
+  },
+  "UCRAINA|EE": {
+    "active": true,
+    "code": "Z138"
+  },
+  "UKRAINE|EE": {
+    "active": true,
+    "code": "Z138"
+  },
+  "UGANDA|EE": {
+    "active": true,
+    "code": "Z353"
+  },
+  "HUNGARY|EE": {
+    "active": true,
+    "code": "Z134"
+  },
+  "UNGHERIA|EE": {
+    "active": true,
+    "code": "Z134"
+  },
+  "URUGUAY|EE": {
+    "active": true,
+    "code": "Z613"
+  },
+  "UZBEKISTAN|EE": {
+    "active": true,
+    "code": "Z259"
+  },
+  "VANUATU|EE": {
+    "active": true,
+    "code": "Z733"
+  },
+  "VENEZUELA|EE": {
+    "active": true,
+    "code": "Z614"
+  },
+  "VENEZUELA-BOLIVARIAN-REPUBLIC-OF|EE": {
+    "active": true,
+    "code": "Z614"
+  },
+  "VIET-NAM|EE": {
+    "active": true,
+    "code": "Z251"
+  },
+  "VIETNAM|EE": {
+    "active": true,
+    "code": "Z251"
+  },
+  "YEMEN|EE": {
+    "active": true,
+    "code": "Z246"
+  },
+  "ZAMBIA|EE": {
+    "active": true,
+    "code": "Z355"
+  },
+  "ZIMBABWE|EE": {
+    "active": true,
+    "code": "Z337"
+  },
+  "ZIMBABWE-EX-RHODESIA|EE": {
+    "active": true,
+    "code": "Z337"
+  }
+}

@@ -1,4 +1,13 @@
-use chrono::{Datelike, NaiveDate, Utc};
+use std::{
+    cell::OnceCell,
+    env::join_paths,
+    fs::File,
+    io::{BufReader, Read},
+    sync::OnceLock,
+};
+
+use chrono::{Datelike, NaiveDate};
+use serde_json::Value;
 
 const MONTH_CODES: [char; 12] = ['A', 'B', 'C', 'D', 'E', 'H', 'L', 'M', 'P', 'R', 'S', 'T'];
 const VOWELS: [char; 6] = ['A', 'E', 'I', 'O', 'U', ' '];
@@ -6,6 +15,8 @@ const CONSONANTS: [char; 22] = [
     'B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X',
     'Y', 'Z', ' ',
 ];
+
+static MUNICIPALITIES: OnceLock<Value> = OnceLock::new();
 
 #[derive(Default, PartialEq, Eq)]
 enum Gender {
@@ -59,6 +70,24 @@ impl Subject {
             year_1 = year.pop().unwrap()
         )
     }
+
+    fn birth_place_code(&self) -> String {
+        let municipalities = MUNICIPALITIES.get_or_init(initialize_municipalities);
+
+        let municipality = self.birth_place.replace(' ', "-").to_ascii_uppercase();
+        let province = self.birth_province.to_ascii_uppercase();
+
+        let found = municipalities
+            .get(&format!("{municipality}|{province}"))
+            .expect("municipality does not exist in the data");
+
+        found
+            .get("code")
+            .expect("found municipality did not have code field")
+            .as_str()
+            .unwrap()
+            .to_owned()
+    }
 }
 
 struct CodiceFiscale(String);
@@ -67,6 +96,19 @@ impl CodiceFiscale {
     fn parse() -> Result<Self, String> {
         todo!()
     }
+}
+
+fn initialize_municipalities() -> Value {
+    let file =
+        File::open("data/municipalities.json").expect("municipalities data file does not exist");
+    let reader = BufReader::new(file);
+
+    let value: Value =
+        serde_json::from_reader(reader).expect("municipalities file was not value JSON");
+
+    assert!(value.is_object(), "municipalities was not an object");
+
+    value
 }
 
 #[cfg(test)]
@@ -182,5 +224,16 @@ mod tests {
         };
 
         assert_eq!(&sub.birth_date_code(), "24T45");
+    }
+
+    #[test]
+    fn test_birth_place() {
+        let sub = Subject {
+            birth_place: "Abano".into(),
+            birth_province: "pd".into(),
+            ..Default::default()
+        };
+
+        assert_eq!(&sub.birth_place_code(), "A001");
     }
 }
