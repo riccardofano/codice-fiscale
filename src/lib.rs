@@ -29,6 +29,17 @@ impl Subject {
         format!("{consonants}{vowels}XXX")[..3].to_owned()
     }
 
+    fn first_name_code(&self) -> String {
+        let consonants = self.first_name.to_ascii_uppercase().replace(VOWELS, "");
+        let b = consonants.as_bytes();
+
+        if b.len() > 3 {
+            format!("{}{}{}", b[0] as char, b[2] as char, b[3] as char)
+        } else {
+            let vowels = self.first_name.to_ascii_uppercase().replace(CONSONANTS, "");
+            format!("{consonants}{vowels}XXX")[..3].to_owned()
+        }
+    }
 }
 
 struct CodiceFiscale(String);
@@ -81,5 +92,45 @@ mod tests {
         };
 
         assert_eq!(&sub.last_name_code(), "YUX");
+    }
+
+    #[test]
+    fn first_name_consonants() {
+        let sub = Subject {
+            first_name: "Massimo".into(),
+            ..Default::default()
+        };
+
+        assert_eq!(&sub.first_name_code(), "MSM");
+    }
+
+    #[test]
+    fn first_name_vowels_needed() {
+        let sub = Subject {
+            first_name: "Mario".into(),
+            ..Default::default()
+        };
+
+        assert_eq!(&sub.first_name_code(), "MRA");
+    }
+
+    #[test]
+    fn first_name_space_inside() {
+        let sub = Subject {
+            first_name: "Maria Teresa".into(),
+            ..Default::default()
+        };
+
+        assert_eq!(&sub.first_name_code(), "MTR");
+    }
+
+    #[test]
+    fn first_name_short() {
+        let sub = Subject {
+            first_name: "Li".into(),
+            ..Default::default()
+        };
+
+        assert_eq!(&sub.first_name_code(), "LIX");
     }
 }
