@@ -12,14 +12,12 @@ const CONSONANTS: [char; 22] = [
 
 static MUNICIPALITIES: OnceLock<Value> = OnceLock::new();
 
-#[derive(Default, PartialEq, Eq, Clone, Copy)]
+#[derive(PartialEq, Eq, Clone, Copy)]
 enum Gender {
-    #[default]
     Male,
     Female,
 }
 
-#[derive(Default)]
 struct Subject {
     first_name: String,
     last_name: String,
@@ -28,8 +26,6 @@ struct Subject {
     birth_place: String,
     birth_province: String,
 }
-
-impl Subject {}
 
 const CHECK_CODE_NUM_ODD: [usize; 10] = [1, 0, 5, 7, 9, 13, 15, 17, 19, 21];
 const CHECK_CODE_LET_ODD: [usize; 26] = [
