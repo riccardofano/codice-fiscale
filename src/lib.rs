@@ -90,11 +90,42 @@ impl Subject {
     }
 }
 
+const CHECK_CODE_NUM_ODD: [usize; 10] = [1, 0, 5, 7, 9, 13, 15, 17, 19, 21];
+const CHECK_CODE_LET_ODD: [usize; 26] = [
+    1, 0, 5, 7, 9, 13, 15, 17, 19, 21, 2, 4, 18, 20, 11, 3, 6, 8, 12, 14, 16, 10, 22, 25, 24, 23,
+];
+
+const CHECK_CODE_NUM_EVEN: [usize; 10] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+const CHECK_CODE_LET_EVEN: [usize; 26] = [
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+];
+
 struct CodiceFiscale(String);
 
 impl CodiceFiscale {
     fn parse() -> Result<Self, String> {
         todo!()
+    }
+
+    fn compute_checksum(partial_cf: &str) -> char {
+        assert_eq!(partial_cf.len(), 15, "expected CF to be 15 characters long");
+
+        let partial_cf = partial_cf.to_uppercase();
+        let mut sum = 0;
+
+        // NOTE: This being 2 loops would eliminate the odd/even check
+        for (i, c) in partial_cf.bytes().enumerate() {
+            // NOTE: The odd/even tables are for 1 indexed numbers so we need to add 1
+            sum += match ((i + 1) % 2 == 0, c.is_ascii_digit()) {
+                (true, true) => CHECK_CODE_NUM_EVEN[(c - b'0') as usize],
+                (true, false) => CHECK_CODE_LET_EVEN[(c - b'A') as usize],
+                (false, true) => CHECK_CODE_NUM_ODD[(c - b'0') as usize],
+                (false, false) => CHECK_CODE_LET_ODD[(c - b'A') as usize],
+            };
+        }
+
+        sum %= 26;
+        (sum as u8 + b'A') as char
     }
 }
 
@@ -235,5 +266,25 @@ mod tests {
         };
 
         assert_eq!(&sub.birth_place_code(), "A001");
+    }
+
+    #[test]
+    fn test_checksum_correct_1() {
+        assert_eq!(CodiceFiscale::compute_checksum("RSSMRA70A41F205"), 'Z');
+    }
+
+    #[test]
+    fn test_checksum_correct_2() {
+        assert_eq!(CodiceFiscale::compute_checksum("RSSRRT80A01D229"), 'D');
+    }
+
+    #[test]
+    fn test_checksum_correct_3() {
+        assert_eq!(CodiceFiscale::compute_checksum("GLNGCR56P10G224"), 'Q');
+    }
+
+    #[test]
+    fn test_checksum_lowercase() {
+        assert_eq!(CodiceFiscale::compute_checksum("rssmra70a41f205"), 'Z');
     }
 }
