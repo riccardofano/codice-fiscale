@@ -40,6 +40,10 @@ const CHECK_CODE_LET_EVEN: [usize; 26] = [
 struct CodiceFiscale(String);
 
 impl CodiceFiscale {
+    fn get(&self) -> &str {
+        &self.0
+    }
+
     fn last_name_code(last_name: &str) -> String {
         let consonants = last_name.to_ascii_uppercase().replace(VOWELS, "");
         let vowels = last_name.to_ascii_uppercase().replace(CONSONANTS, "");
@@ -112,6 +116,23 @@ impl CodiceFiscale {
 
         sum %= 26;
         (sum as u8 + b'A') as char
+    }
+}
+
+impl From<&Subject> for CodiceFiscale {
+    fn from(value: &Subject) -> Self {
+        let mut output = String::with_capacity(16);
+
+        output.push_str(&Self::last_name_code(&value.last_name));
+        output.push_str(&Self::first_name_code(&value.first_name));
+        output.push_str(&Self::birth_date_code(value.birth_date, value.gender));
+        output.push_str(&Self::birth_place_code(
+            &value.birth_place,
+            &value.birth_province,
+        ));
+        output.push(Self::compute_checksum(&output));
+
+        Self(output)
     }
 }
 
@@ -220,5 +241,33 @@ mod tests {
     #[test]
     fn test_checksum_lowercase() {
         assert_eq!(CodiceFiscale::compute_checksum("rssmra70a41f205"), 'Z');
+    }
+
+    #[test]
+    fn test_encodes_complete_cf_1() {
+        let subject = Subject {
+            first_name: "Maria".into(),
+            last_name: "Rossi".into(),
+            birth_date: NaiveDate::from_ymd_opt(1970, 1, 1).unwrap(),
+            gender: Gender::Female,
+            birth_place: "Milano".into(),
+            birth_province: "Mi".into(),
+        };
+
+        assert_eq!(CodiceFiscale::from(&subject).get(), "RSSMRA70A41F205Z");
+    }
+
+    #[test]
+    fn test_encodes_complete_cf_2() {
+        let subject = Subject {
+            first_name: "Giancarlo".into(),
+            last_name: "Galan".into(),
+            birth_date: NaiveDate::from_ymd_opt(1956, 9, 10).unwrap(),
+            gender: Gender::Male,
+            birth_place: "Padova".into(),
+            birth_province: "PD".into(),
+        };
+
+        assert_eq!(CodiceFiscale::from(&subject).get(), "GLNGCR56P10G224Q");
     }
 }
