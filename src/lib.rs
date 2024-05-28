@@ -1,7 +1,9 @@
 use std::{fs::File, io::BufReader, sync::OnceLock};
 
-use chrono::{Datelike, NaiveDate};
+use chrono::Datelike;
 use serde_json::Value;
+
+pub use chrono::NaiveDate;
 
 const MONTH_CODES: [char; 12] = ['A', 'B', 'C', 'D', 'E', 'H', 'L', 'M', 'P', 'R', 'S', 'T'];
 const VOWELS: [char; 6] = ['A', 'E', 'I', 'O', 'U', ' '];
@@ -13,18 +15,18 @@ const CONSONANTS: [char; 22] = [
 static MUNICIPALITIES: OnceLock<Value> = OnceLock::new();
 
 #[derive(PartialEq, Eq, Clone, Copy)]
-enum Gender {
+pub enum Gender {
     Male,
     Female,
 }
 
-struct Subject {
-    first_name: String,
-    last_name: String,
-    birth_date: NaiveDate,
-    gender: Gender,
-    birth_place: String,
-    birth_province: String,
+pub struct Subject {
+    pub first_name: String,
+    pub last_name: String,
+    pub birth_date: NaiveDate,
+    pub gender: Gender,
+    pub birth_place: String,
+    pub birth_province: String,
 }
 
 const CHECK_CODE_NUM_ODD: [usize; 10] = [1, 0, 5, 7, 9, 13, 15, 17, 19, 21];
@@ -37,10 +39,10 @@ const CHECK_CODE_LET_EVEN: [usize; 26] = [
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
 ];
 
-struct CodiceFiscale(String);
+pub struct CodiceFiscale(String);
 
 impl CodiceFiscale {
-    fn get(&self) -> &str {
+    pub fn get(&self) -> &str {
         &self.0
     }
 
