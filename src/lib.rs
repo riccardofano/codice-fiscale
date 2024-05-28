@@ -1,10 +1,4 @@
-use std::{
-    cell::OnceCell,
-    env::join_paths,
-    fs::File,
-    io::{BufReader, Read},
-    sync::OnceLock,
-};
+use std::{fs::File, io::BufReader, sync::OnceLock};
 
 use chrono::{Datelike, NaiveDate};
 use serde_json::Value;
@@ -18,7 +12,7 @@ const CONSONANTS: [char; 22] = [
 
 static MUNICIPALITIES: OnceLock<Value> = OnceLock::new();
 
-#[derive(Default, PartialEq, Eq)]
+#[derive(Default, PartialEq, Eq, Clone, Copy)]
 enum Gender {
     #[default]
     Male,
@@ -35,60 +29,7 @@ struct Subject {
     birth_province: String,
 }
 
-impl Subject {
-    fn last_name_code(&self) -> String {
-        let consonants = self.last_name.to_ascii_uppercase().replace(VOWELS, "");
-        let vowels = self.last_name.to_ascii_uppercase().replace(CONSONANTS, "");
-
-        format!("{consonants}{vowels}XXX")[..3].to_owned()
-    }
-
-    fn first_name_code(&self) -> String {
-        let consonants = self.first_name.to_ascii_uppercase().replace(VOWELS, "");
-        let b = consonants.as_bytes();
-
-        if b.len() > 3 {
-            format!("{}{}{}", b[0] as char, b[2] as char, b[3] as char)
-        } else {
-            let vowels = self.first_name.to_ascii_uppercase().replace(CONSONANTS, "");
-            format!("{consonants}{vowels}XXX")[..3].to_owned()
-        }
-    }
-
-    fn birth_date_code(&self) -> String {
-        let mut year = self.birth_date.year().to_string();
-        let month = MONTH_CODES[self.birth_date.month0() as usize];
-        let mut day = self.birth_date.day();
-
-        if self.gender == Gender::Female {
-            day += 40;
-        }
-
-        format!(
-            "{year_1}{year_0}{month}{day:02}",
-            year_0 = year.pop().unwrap(),
-            year_1 = year.pop().unwrap()
-        )
-    }
-
-    fn birth_place_code(&self) -> String {
-        let municipalities = MUNICIPALITIES.get_or_init(initialize_municipalities);
-
-        let municipality = self.birth_place.replace(' ', "-").to_ascii_uppercase();
-        let province = self.birth_province.to_ascii_uppercase();
-
-        let found = municipalities
-            .get(&format!("{municipality}|{province}"))
-            .expect("municipality does not exist in the data");
-
-        found
-            .get("code")
-            .expect("found municipality did not have code field")
-            .as_str()
-            .unwrap()
-            .to_owned()
-    }
-}
+impl Subject {}
 
 const CHECK_CODE_NUM_ODD: [usize; 10] = [1, 0, 5, 7, 9, 13, 15, 17, 19, 21];
 const CHECK_CODE_LET_ODD: [usize; 26] = [
@@ -103,8 +44,57 @@ const CHECK_CODE_LET_EVEN: [usize; 26] = [
 struct CodiceFiscale(String);
 
 impl CodiceFiscale {
-    fn parse() -> Result<Self, String> {
-        todo!()
+    fn last_name_code(last_name: &str) -> String {
+        let consonants = last_name.to_ascii_uppercase().replace(VOWELS, "");
+        let vowels = last_name.to_ascii_uppercase().replace(CONSONANTS, "");
+
+        format!("{consonants}{vowels}XXX")[..3].to_owned()
+    }
+
+    fn first_name_code(first_name: &str) -> String {
+        let consonants = first_name.to_ascii_uppercase().replace(VOWELS, "");
+        let b = consonants.as_bytes();
+
+        if b.len() > 3 {
+            format!("{}{}{}", b[0] as char, b[2] as char, b[3] as char)
+        } else {
+            let vowels = first_name.to_ascii_uppercase().replace(CONSONANTS, "");
+            format!("{consonants}{vowels}XXX")[..3].to_owned()
+        }
+    }
+
+    fn birth_date_code(birth_date: NaiveDate, gender: Gender) -> String {
+        let mut year = birth_date.year().to_string();
+        let month = MONTH_CODES[birth_date.month0() as usize];
+        let mut day = birth_date.day();
+
+        if gender == Gender::Female {
+            day += 40;
+        }
+
+        format!(
+            "{year_1}{year_0}{month}{day:02}",
+            year_0 = year.pop().unwrap(),
+            year_1 = year.pop().unwrap()
+        )
+    }
+
+    fn birth_place_code(city: &str, province: &str) -> String {
+        let municipalities = MUNICIPALITIES.get_or_init(initialize_municipalities);
+
+        let municipality = city.replace(' ', "-").to_ascii_uppercase();
+        let province = province.to_ascii_uppercase();
+
+        let found = municipalities
+            .get(&format!("{municipality}|{province}"))
+            .expect("municipality does not exist in the data");
+
+        found
+            .get("code")
+            .expect("found municipality did not have code field")
+            .as_str()
+            .unwrap()
+            .to_owned()
     }
 
     fn compute_checksum(partial_cf: &str) -> char {
@@ -148,124 +138,72 @@ mod tests {
 
     #[test]
     fn test_last_name_code_enough_consonants() {
-        let sub = Subject {
-            last_name: "Rossi".into(),
-            ..Default::default()
-        };
-
-        assert_eq!(&sub.last_name_code(), "RSS");
+        assert_eq!(&CodiceFiscale::last_name_code("Rossi"), "RSS");
     }
 
     #[test]
     fn test_last_name_code_vowels_needed() {
-        let sub = Subject {
-            last_name: "Bigi".into(),
-            ..Default::default()
-        };
-
-        assert_eq!(&sub.last_name_code(), "BGI");
+        assert_eq!(&CodiceFiscale::last_name_code("Bigi"), "BGI");
     }
 
     #[test]
     fn test_last_name_code_space_inside() {
-        let sub = Subject {
-            last_name: "De Rossi".into(),
-            ..Default::default()
-        };
-
-        assert_eq!(&sub.last_name_code(), "DRS");
+        assert_eq!(&CodiceFiscale::last_name_code("De Rossi"), "DRS");
     }
 
     #[test]
     fn test_last_name_code_short() {
-        let sub = Subject {
-            last_name: "Yu".into(),
-            ..Default::default()
-        };
-
-        assert_eq!(&sub.last_name_code(), "YUX");
+        assert_eq!(&CodiceFiscale::last_name_code("Yu"), "YUX");
     }
 
     #[test]
     fn test_first_name_consonants() {
-        let sub = Subject {
-            first_name: "Massimo".into(),
-            ..Default::default()
-        };
-
-        assert_eq!(&sub.first_name_code(), "MSM");
+        assert_eq!(&CodiceFiscale::first_name_code("Massimo"), "MSM");
     }
 
     #[test]
     fn test_first_name_vowels_needed() {
-        let sub = Subject {
-            first_name: "Mario".into(),
-            ..Default::default()
-        };
-
-        assert_eq!(&sub.first_name_code(), "MRA");
+        assert_eq!(&CodiceFiscale::first_name_code("Mario"), "MRA");
     }
 
     #[test]
     fn test_first_name_space_inside() {
-        let sub = Subject {
-            first_name: "Maria Teresa".into(),
-            ..Default::default()
-        };
-
-        assert_eq!(&sub.first_name_code(), "MTR");
+        assert_eq!(&CodiceFiscale::first_name_code("Maria Teresa"), "MTR");
     }
 
     #[test]
     fn test_first_name_short() {
-        let sub = Subject {
-            first_name: "Li".into(),
-            ..Default::default()
-        };
-
-        assert_eq!(&sub.first_name_code(), "LIX");
+        assert_eq!(&CodiceFiscale::first_name_code("Li"), "LIX");
     }
 
     #[test]
     fn test_birth_date_code() {
-        let sub = Subject {
-            birth_date: NaiveDate::from_ymd_opt(2024, 12, 31).unwrap(),
-            ..Default::default()
-        };
+        let birth_date = NaiveDate::from_ymd_opt(2024, 12, 31).unwrap();
 
-        assert_eq!(&sub.birth_date_code(), "24T31");
+        let res = CodiceFiscale::birth_date_code(birth_date, Gender::Male);
+        assert_eq!(&res, "24T31");
     }
 
     #[test]
     fn test_birth_date_small_day() {
-        let sub = Subject {
-            birth_date: NaiveDate::from_ymd_opt(2024, 12, 5).unwrap(),
-            ..Default::default()
-        };
+        let birth_date = NaiveDate::from_ymd_opt(2024, 12, 5).unwrap();
 
-        assert_eq!(&sub.birth_date_code(), "24T05");
+        let res = CodiceFiscale::birth_date_code(birth_date, Gender::Male);
+        assert_eq!(&res, "24T05");
     }
 
     #[test]
     fn test_birth_date_female() {
-        let sub = Subject {
-            birth_date: NaiveDate::from_ymd_opt(2024, 12, 5).unwrap(),
-            gender: Gender::Female,
-            ..Default::default()
-        };
+        let birth_date = NaiveDate::from_ymd_opt(2024, 12, 5).unwrap();
 
-        assert_eq!(&sub.birth_date_code(), "24T45");
+        let res = CodiceFiscale::birth_date_code(birth_date, Gender::Female);
+        assert_eq!(&res, "24T45");
     }
 
     #[test]
     fn test_birth_place() {
-        let sub = Subject {
-            birth_place: "Abano".into(),
-            birth_province: "pd".into(),
-            ..Default::default()
-        };
-
-        assert_eq!(&sub.birth_place_code(), "A001");
+        let res = CodiceFiscale::birth_place_code("Abano", "PD");
+        assert_eq!(&res, "A001");
     }
 
     #[test]
