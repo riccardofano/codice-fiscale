@@ -5,13 +5,6 @@ use serde_json::Value;
 
 pub use chrono::NaiveDate;
 
-const MONTH_CODES: [char; 12] = ['A', 'B', 'C', 'D', 'E', 'H', 'L', 'M', 'P', 'R', 'S', 'T'];
-const VOWELS: [char; 6] = ['A', 'E', 'I', 'O', 'U', ' '];
-const CONSONANTS: [char; 22] = [
-    'B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X',
-    'Y', 'Z', ' ',
-];
-
 static MUNICIPALITIES: OnceLock<Value> = OnceLock::new();
 
 #[derive(PartialEq, Eq, Clone, Copy)]
@@ -29,45 +22,54 @@ pub struct Subject {
     pub birth_province: String,
 }
 
-const CHECK_CODE_NUM_ODD: [usize; 10] = [1, 0, 5, 7, 9, 13, 15, 17, 19, 21];
-const CHECK_CODE_LET_ODD: [usize; 26] = [
-    1, 0, 5, 7, 9, 13, 15, 17, 19, 21, 2, 4, 18, 20, 11, 3, 6, 8, 12, 14, 16, 10, 22, 25, 24, 23,
-];
-
-const CHECK_CODE_NUM_EVEN: [usize; 10] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-const CHECK_CODE_LET_EVEN: [usize; 26] = [
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
-];
-
 pub struct CodiceFiscale(String);
-
 impl CodiceFiscale {
+    const MONTH_CODES: [char; 12] = ['A', 'B', 'C', 'D', 'E', 'H', 'L', 'M', 'P', 'R', 'S', 'T'];
+    const VOWELS: [char; 6] = ['A', 'E', 'I', 'O', 'U', ' '];
+    const CONSONANTS: [char; 22] = [
+        'B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W',
+        'X', 'Y', 'Z', ' ',
+    ];
+
+    const CHECK_CODE_NUM_ODD: [usize; 10] = [1, 0, 5, 7, 9, 13, 15, 17, 19, 21];
+    const CHECK_CODE_LET_ODD: [usize; 26] = [
+        1, 0, 5, 7, 9, 13, 15, 17, 19, 21, 2, 4, 18, 20, 11, 3, 6, 8, 12, 14, 16, 10, 22, 25, 24,
+        23,
+    ];
+    const CHECK_CODE_NUM_EVEN: [usize; 10] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    const CHECK_CODE_LET_EVEN: [usize; 26] = [
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+        25,
+    ];
+
     pub fn get(&self) -> &str {
         &self.0
     }
 
     fn last_name_code(last_name: &str) -> String {
-        let consonants = last_name.to_ascii_uppercase().replace(VOWELS, "");
-        let vowels = last_name.to_ascii_uppercase().replace(CONSONANTS, "");
+        let consonants = last_name.to_ascii_uppercase().replace(Self::VOWELS, "");
+        let vowels = last_name.to_ascii_uppercase().replace(Self::CONSONANTS, "");
 
         format!("{consonants}{vowels}XXX")[..3].to_owned()
     }
 
     fn first_name_code(first_name: &str) -> String {
-        let consonants = first_name.to_ascii_uppercase().replace(VOWELS, "");
+        let consonants = first_name.to_ascii_uppercase().replace(Self::VOWELS, "");
         let b = consonants.as_bytes();
 
         if b.len() > 3 {
             format!("{}{}{}", b[0] as char, b[2] as char, b[3] as char)
         } else {
-            let vowels = first_name.to_ascii_uppercase().replace(CONSONANTS, "");
+            let vowels = first_name
+                .to_ascii_uppercase()
+                .replace(Self::CONSONANTS, "");
             format!("{consonants}{vowels}XXX")[..3].to_owned()
         }
     }
 
     fn birth_date_code(birth_date: NaiveDate, gender: Gender) -> String {
         let mut year = birth_date.year().to_string();
-        let month = MONTH_CODES[birth_date.month0() as usize];
+        let month = Self::MONTH_CODES[birth_date.month0() as usize];
         let mut day = birth_date.day();
 
         if gender == Gender::Female {
@@ -109,10 +111,10 @@ impl CodiceFiscale {
         for (i, c) in partial_cf.bytes().enumerate() {
             // NOTE: The odd/even tables are for 1 indexed numbers so we need to add 1
             sum += match ((i + 1) % 2 == 0, c.is_ascii_digit()) {
-                (true, true) => CHECK_CODE_NUM_EVEN[(c - b'0') as usize],
-                (true, false) => CHECK_CODE_LET_EVEN[(c - b'A') as usize],
-                (false, true) => CHECK_CODE_NUM_ODD[(c - b'0') as usize],
-                (false, false) => CHECK_CODE_LET_ODD[(c - b'A') as usize],
+                (true, true) => Self::CHECK_CODE_NUM_EVEN[(c - b'0') as usize],
+                (true, false) => Self::CHECK_CODE_LET_EVEN[(c - b'A') as usize],
+                (false, true) => Self::CHECK_CODE_NUM_ODD[(c - b'0') as usize],
+                (false, false) => Self::CHECK_CODE_LET_ODD[(c - b'A') as usize],
             };
         }
 
