@@ -1,11 +1,7 @@
-use std::{fs::File, io::BufReader, sync::OnceLock};
-
 use chrono::Datelike;
-use serde_json::Value;
-
 pub use chrono::NaiveDate;
 
-static MUNICIPALITIES: OnceLock<Value> = OnceLock::new();
+include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
 
 #[derive(PartialEq, Eq, Clone, Copy)]
 pub enum Gender {
@@ -83,22 +79,18 @@ impl CodiceFiscale {
         )
     }
 
+    // TODO: Handle the possibility of not finding the place, right now it just crashes
     fn birth_place_code(city: &str, province: &str) -> String {
-        let municipalities = MUNICIPALITIES.get_or_init(initialize_municipalities);
-
-        let municipality = city.replace(' ', "-").to_ascii_uppercase();
+        let municipality = city.replace(' ', "-").to_ascii_lowercase();
         let province = province.to_ascii_uppercase();
 
-        let found = municipalities
-            .get(&format!("{municipality}|{province}"))
-            .expect("municipality does not exist in the data");
+        let key = format!("{municipality},{province}");
 
-        found
-            .get("code")
-            .expect("found municipality did not have code field")
-            .as_str()
-            .unwrap()
-            .to_owned()
+        if let Some(active_found) = ACTIVE_PLACES.get(&key) {
+            return active_found.to_string();
+        }
+
+        INACTIVE_PLACES.get(&key).unwrap().to_string()
     }
 
     fn compute_checksum(partial_cf: &str) -> char {
@@ -138,19 +130,6 @@ impl From<&Subject> for CodiceFiscale {
 
         Self(output)
     }
-}
-
-fn initialize_municipalities() -> Value {
-    let file =
-        File::open("data/municipalities.json").expect("municipalities data file does not exist");
-    let reader = BufReader::new(file);
-
-    let value: Value =
-        serde_json::from_reader(reader).expect("municipalities file was not value JSON");
-
-    assert!(value.is_object(), "municipalities was not an object");
-
-    value
 }
 
 #[cfg(test)]
