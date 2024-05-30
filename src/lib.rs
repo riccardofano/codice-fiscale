@@ -1,3 +1,5 @@
+use std::error::Error;
+
 use chrono::Datelike;
 pub use chrono::NaiveDate;
 
@@ -58,8 +60,16 @@ impl CodiceFiscale {
         }
     }
 
-    fn birth_date_code(birth_date: NaiveDate, gender: Gender) -> String {
-        let mut year = birth_date.year().to_string();
+    fn birth_date_code(
+        birth_date: NaiveDate,
+        gender: Gender,
+    ) -> Result<String, CodiceFiscaleError> {
+        let year = birth_date.year();
+
+        if year < 1700 {
+            return Err(CodiceFiscaleError::InvalidYear);
+        }
+
         let month = Self::MONTH_CODES[birth_date.month0() as usize];
         let mut day = birth_date.day();
 
@@ -67,11 +77,7 @@ impl CodiceFiscale {
             day += 40;
         }
 
-        format!(
-            "{year_1}{year_0}{month}{day:02}",
-            year_0 = year.pop().unwrap(),
-            year_1 = year.pop().unwrap()
-        )
+        Ok(format!("{year}{month}{day:02}", year = year % 100))
     }
 
     // TODO: Handle the possibility of not finding the place, right now it just crashes
@@ -110,19 +116,40 @@ impl CodiceFiscale {
     }
 }
 
-impl From<&Subject> for CodiceFiscale {
-    fn from(value: &Subject) -> Self {
+impl TryFrom<&Subject> for CodiceFiscale {
+    type Error = CodiceFiscaleError;
+
+    fn try_from(value: &Subject) -> Result<Self, Self::Error> {
         let mut output = String::with_capacity(16);
 
         output.push_str(&Self::last_name_code(&value.last_name));
         output.push_str(&Self::first_name_code(&value.first_name));
-        output.push_str(&Self::birth_date_code(value.birth_date, value.gender));
+        output.push_str(&Self::birth_date_code(value.birth_date, value.gender)?);
 
-        let place_code = Self::birth_place_code(&value.birth_place, &value.birth_province);
-        output.push_str(&place_code.unwrap());
+        let place_code = Self::birth_place_code(&value.birth_place, &value.birth_province)
+            .ok_or(Self::Error::BelfioreCodeNotFound)?;
+        output.push_str(&place_code);
         output.push(Self::compute_checksum(&output));
 
-        Self(output)
+        Ok(Self(output))
+    }
+}
+
+#[derive(Debug)]
+pub enum CodiceFiscaleError {
+    BelfioreCodeNotFound,
+    InvalidYear,
+}
+
+impl Error for CodiceFiscaleError {}
+impl std::fmt::Display for CodiceFiscaleError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let message = match self {
+            Self::BelfioreCodeNotFound => "could not find belfiore code for this city and province",
+            Self::InvalidYear => "the year must be greater than 1700",
+        };
+
+        write!(f, "{message}")
     }
 }
 
@@ -175,7 +202,7 @@ mod tests {
         let birth_date = NaiveDate::from_ymd_opt(2024, 12, 31).unwrap();
 
         let res = CodiceFiscale::birth_date_code(birth_date, Gender::Male);
-        assert_eq!(&res, "24T31");
+        assert_eq!(&res.unwrap(), "24T31");
     }
 
     #[test]
@@ -183,7 +210,7 @@ mod tests {
         let birth_date = NaiveDate::from_ymd_opt(2024, 12, 5).unwrap();
 
         let res = CodiceFiscale::birth_date_code(birth_date, Gender::Male);
-        assert_eq!(&res, "24T05");
+        assert_eq!(&res.unwrap(), "24T05");
     }
 
     #[test]
@@ -191,7 +218,14 @@ mod tests {
         let birth_date = NaiveDate::from_ymd_opt(2024, 12, 5).unwrap();
 
         let res = CodiceFiscale::birth_date_code(birth_date, Gender::Female);
-        assert_eq!(&res, "24T45");
+        assert_eq!(&res.unwrap(), "24T45");
+    }
+
+    #[test]
+    fn test_birth_date_invalid_year() {
+        let birth_date = NaiveDate::from_ymd_opt(1508, 4, 12).unwrap();
+        let res = CodiceFiscale::birth_date_code(birth_date, Gender::Female);
+        assert!(&res.is_err());
     }
 
     #[test]
@@ -237,7 +271,10 @@ mod tests {
             birth_province: "Mi".into(),
         };
 
-        assert_eq!(CodiceFiscale::from(&subject).get(), "RSSMRA70A41F205Z");
+        assert_eq!(
+            CodiceFiscale::try_from(&subject).unwrap().get(),
+            "RSSMRA70A41F205Z"
+        );
     }
 
     #[test]
@@ -251,6 +288,9 @@ mod tests {
             birth_province: "PD".into(),
         };
 
-        assert_eq!(CodiceFiscale::from(&subject).get(), "GLNGCR56P10G224Q");
+        assert_eq!(
+            CodiceFiscale::try_from(&subject).unwrap().get(),
+            "GLNGCR56P10G224Q"
+        );
     }
 }

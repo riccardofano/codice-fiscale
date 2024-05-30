@@ -13,12 +13,12 @@ fn main() {
     };
 
     let start = Instant::now();
-    let cf = CodiceFiscale::from(&subject);
+    let cf = CodiceFiscale::try_from(&subject).unwrap();
     let time = start.elapsed();
     println!("{}, took: {}us", cf.get(), time.as_micros());
 
     let start = Instant::now();
-    let cf = CodiceFiscale::from(&subject);
+    let cf = CodiceFiscale::try_from(&subject).unwrap();
     let time = start.elapsed();
     println!("{}, took: {}us", cf.get(), time.as_micros());
 }
