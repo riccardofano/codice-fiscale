@@ -75,17 +75,17 @@ impl CodiceFiscale {
     }
 
     // TODO: Handle the possibility of not finding the place, right now it just crashes
-    fn birth_place_code(city: &str, province: &str) -> String {
+    fn birth_place_code(city: &str, province: &str) -> Option<String> {
         let municipality = city.replace(' ', "-").to_ascii_lowercase();
         let province = province.to_ascii_uppercase();
 
         let key = format!("{municipality},{province}");
 
         if let Some(active_found) = ACTIVE_PLACES.get(&key) {
-            return active_found.to_string();
+            return Some(active_found.to_string());
         }
 
-        INACTIVE_PLACES.get(&key).unwrap().to_string()
+        INACTIVE_PLACES.get(&key).map(|p| p.to_string())
     }
 
     fn compute_checksum(partial_cf: &str) -> char {
@@ -117,10 +117,9 @@ impl From<&Subject> for CodiceFiscale {
         output.push_str(&Self::last_name_code(&value.last_name));
         output.push_str(&Self::first_name_code(&value.first_name));
         output.push_str(&Self::birth_date_code(value.birth_date, value.gender));
-        output.push_str(&Self::birth_place_code(
-            &value.birth_place,
-            &value.birth_province,
-        ));
+
+        let place_code = Self::birth_place_code(&value.birth_place, &value.birth_province);
+        output.push_str(&place_code.unwrap());
         output.push(Self::compute_checksum(&output));
 
         Self(output)
@@ -198,7 +197,13 @@ mod tests {
     #[test]
     fn test_birth_place() {
         let res = CodiceFiscale::birth_place_code("Abano", "PD");
-        assert_eq!(&res, "A001");
+        assert_eq!(res.as_deref(), Some("A001"));
+    }
+
+    #[test]
+    fn test_birth_place_not_found() {
+        let res = CodiceFiscale::birth_place_code("I dont exist", "PD");
+        assert_eq!(res.as_deref(), None);
     }
 
     #[test]
