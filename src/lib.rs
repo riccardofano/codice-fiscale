@@ -94,8 +94,10 @@ impl CodiceFiscale {
         INACTIVE_PLACES.get(&key).map(|p| p.to_string())
     }
 
-    fn compute_checksum(partial_cf: &str) -> char {
-        assert_eq!(partial_cf.len(), 15, "expected CF to be 15 characters long");
+    fn compute_checksum(partial_cf: &str) -> Result<char, CodiceFiscaleError> {
+        if partial_cf.len() != 15 {
+            return Err(CodiceFiscaleError::InvalidChecksumInput);
+        }
 
         let partial_cf = partial_cf.to_uppercase();
         let mut sum = 0;
@@ -112,7 +114,7 @@ impl CodiceFiscale {
         }
 
         sum %= 26;
-        (sum as u8 + b'A') as char
+        Ok((sum as u8 + b'A') as char)
     }
 }
 
@@ -129,7 +131,7 @@ impl TryFrom<&Subject> for CodiceFiscale {
         let place_code = Self::birth_place_code(&value.birth_place, &value.birth_province)
             .ok_or(Self::Error::BelfioreCodeNotFound)?;
         output.push_str(&place_code);
-        output.push(Self::compute_checksum(&output));
+        output.push(Self::compute_checksum(&output)?);
 
         Ok(Self(output))
     }
@@ -139,6 +141,7 @@ impl TryFrom<&Subject> for CodiceFiscale {
 pub enum CodiceFiscaleError {
     BelfioreCodeNotFound,
     InvalidYear,
+    InvalidChecksumInput,
 }
 
 impl Error for CodiceFiscaleError {}
@@ -147,6 +150,9 @@ impl std::fmt::Display for CodiceFiscaleError {
         let message = match self {
             Self::BelfioreCodeNotFound => "could not find belfiore code for this city and province",
             Self::InvalidYear => "the year must be greater than 1700",
+            Self::InvalidChecksumInput => {
+                "could not compute checksum because input was not 15 characters long"
+            }
         };
 
         write!(f, "{message}")
@@ -242,22 +248,44 @@ mod tests {
 
     #[test]
     fn test_checksum_correct_1() {
-        assert_eq!(CodiceFiscale::compute_checksum("RSSMRA70A41F205"), 'Z');
+        assert_eq!(
+            CodiceFiscale::compute_checksum("RSSMRA70A41F205").unwrap(),
+            'Z'
+        );
     }
 
     #[test]
     fn test_checksum_correct_2() {
-        assert_eq!(CodiceFiscale::compute_checksum("RSSRRT80A01D229"), 'D');
+        assert_eq!(
+            CodiceFiscale::compute_checksum("RSSRRT80A01D229").unwrap(),
+            'D'
+        );
     }
 
     #[test]
     fn test_checksum_correct_3() {
-        assert_eq!(CodiceFiscale::compute_checksum("GLNGCR56P10G224"), 'Q');
+        assert_eq!(
+            CodiceFiscale::compute_checksum("GLNGCR56P10G224").unwrap(),
+            'Q'
+        );
     }
 
     #[test]
     fn test_checksum_lowercase() {
-        assert_eq!(CodiceFiscale::compute_checksum("rssmra70a41f205"), 'Z');
+        assert_eq!(
+            CodiceFiscale::compute_checksum("rssmra70a41f205").unwrap(),
+            'Z'
+        );
+    }
+
+    #[test]
+    fn test_checksum_short_input() {
+        assert!(CodiceFiscale::compute_checksum("RSSMRA70A41205").is_err());
+    }
+
+    #[test]
+    fn test_checksum_long_input() {
+        assert!(CodiceFiscale::compute_checksum("RSSMRA70A41F205A").is_err());
     }
 
     #[test]
