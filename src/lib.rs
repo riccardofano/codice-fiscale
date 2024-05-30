@@ -20,23 +20,18 @@ pub struct Subject {
 
 pub struct CodiceFiscale(String);
 impl CodiceFiscale {
-    const MONTH_CODES: [char; 12] = ['A', 'B', 'C', 'D', 'E', 'H', 'L', 'M', 'P', 'R', 'S', 'T'];
     const VOWELS: [char; 6] = ['A', 'E', 'I', 'O', 'U', ' '];
-    const CONSONANTS: [char; 22] = [
-        'B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W',
-        'X', 'Y', 'Z', ' ',
-    ];
+    #[rustfmt::skip]
+    const CONSONANTS: [char; 22] = [ 'B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z', ' ' ];
+
+    const MONTH_CODES: [char; 12] = ['A', 'B', 'C', 'D', 'E', 'H', 'L', 'M', 'P', 'R', 'S', 'T'];
 
     const CHECK_CODE_NUM_ODD: [usize; 10] = [1, 0, 5, 7, 9, 13, 15, 17, 19, 21];
-    const CHECK_CODE_LET_ODD: [usize; 26] = [
-        1, 0, 5, 7, 9, 13, 15, 17, 19, 21, 2, 4, 18, 20, 11, 3, 6, 8, 12, 14, 16, 10, 22, 25, 24,
-        23,
-    ];
     const CHECK_CODE_NUM_EVEN: [usize; 10] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-    const CHECK_CODE_LET_EVEN: [usize; 26] = [
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
-        25,
-    ];
+    #[rustfmt::skip]
+    const CHECK_CODE_LET_ODD: [usize; 26] = [ 1, 0, 5, 7, 9, 13, 15, 17, 19, 21, 2, 4, 18, 20, 11, 3, 6, 8, 12, 14, 16, 10, 22, 25, 24, 23 ];
+    #[rustfmt::skip]
+    const CHECK_CODE_LET_EVEN: [usize; 26] = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 ];
 
     pub fn get(&self) -> &str {
         &self.0
