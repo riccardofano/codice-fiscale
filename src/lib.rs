@@ -78,7 +78,7 @@ impl CodiceFiscale {
             day += 40;
         }
 
-        Ok(format!("{year}{month}{day:02}", year = year % 100))
+        Ok(format!("{year:02}{month}{day:02}", year = year % 100))
     }
 
     // TODO: Handle the possibility of not finding the place, right now it just crashes
@@ -226,6 +226,13 @@ mod tests {
 
         let res = CodiceFiscale::birth_date_code(birth_date, Gender::Female);
         assert_eq!(&res.unwrap(), "24T45");
+    }
+
+    #[test]
+    fn test_birth_date_ends_with_0_something() {
+        let birth_date = NaiveDate::from_ymd_opt(2003, 12, 6).unwrap();
+        let res = CodiceFiscale::birth_date_code(birth_date, Gender::Male);
+        assert_eq!(&res.unwrap(), "03T06");
     }
 
     #[test]
