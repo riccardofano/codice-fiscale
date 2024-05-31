@@ -3,9 +3,8 @@ use rand::rngs::ThreadRng;
 use rand::seq::{IteratorRandom, SliceRandom};
 use rand::{thread_rng, Rng};
 
-use codice_fiscale::{CodiceFiscale, Gender, NaiveDate, Subject};
+use codice_fiscale::{CodiceFiscale, Gender, NaiveDate, Subject, ACTIVE_PLACES, INACTIVE_PLACES};
 
-include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
 const GENDERS: [Gender; 2] = [Gender::Male, Gender::Female];
 const ALLOWED_CHARS: [char; 27] = [
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',

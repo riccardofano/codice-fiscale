@@ -15,14 +15,14 @@ fn main() {
 
     writeln!(
         &mut file,
-        "static ACTIVE_PLACES: phf::Map<&'static str, &'static str> = {};",
+        "pub static ACTIVE_PLACES: phf::Map<&'static str, &'static str> = {};",
         active_map.build()
     )
     .expect("could not write active places map to file");
 
     writeln!(
         &mut file,
-        "static INACTIVE_PLACES: phf::Map<&'static str, &'static str> = {};",
+        "pub static INACTIVE_PLACES: phf::Map<&'static str, &'static str> = {};",
         inactive_map.build()
     )
     .expect("could not write inactive places map to file");
