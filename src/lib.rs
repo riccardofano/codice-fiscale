@@ -21,7 +21,11 @@ pub struct Subject {
     pub birth_province: String,
 }
 
+type CFResult<T> = Result<T, CFError>;
+
+#[derive(Debug, Clone)]
 pub struct CodiceFiscale(String);
+
 impl CodiceFiscale {
     const VOWELS: [char; 6] = ['A', 'E', 'I', 'O', 'U', ' '];
     #[rustfmt::skip]
@@ -40,35 +44,39 @@ impl CodiceFiscale {
         &self.0
     }
 
-    fn last_name_code(last_name: &str) -> String {
+    fn last_name_code(last_name: &str) -> CFResult<String> {
+        if !is_alpha_or_space(last_name) {
+            return Err(CFError::InvalidString);
+        }
+
         let consonants = last_name.to_ascii_uppercase().replace(Self::VOWELS, "");
         let vowels = last_name.to_ascii_uppercase().replace(Self::CONSONANTS, "");
 
-        format!("{consonants}{vowels}XXX")[..3].to_owned()
+        Ok(format!("{consonants}{vowels}XXX")[..3].to_owned())
     }
 
-    fn first_name_code(first_name: &str) -> String {
+    fn first_name_code(first_name: &str) -> CFResult<String> {
+        if !is_alpha_or_space(first_name) {
+            return Err(CFError::InvalidString);
+        }
+
         let consonants = first_name.to_ascii_uppercase().replace(Self::VOWELS, "");
         let b = consonants.as_bytes();
 
         if b.len() > 3 {
-            format!("{}{}{}", b[0] as char, b[2] as char, b[3] as char)
+            Ok(format!("{}{}{}", b[0] as char, b[2] as char, b[3] as char))
         } else {
             let vowels = first_name
                 .to_ascii_uppercase()
                 .replace(Self::CONSONANTS, "");
-            format!("{consonants}{vowels}XXX")[..3].to_owned()
+            Ok(format!("{consonants}{vowels}XXX")[..3].to_owned())
         }
     }
 
-    fn birth_date_code(
-        birth_date: NaiveDate,
-        gender: Gender,
-    ) -> Result<String, CodiceFiscaleError> {
+    fn birth_date_code(birth_date: NaiveDate, gender: Gender) -> CFResult<String> {
         let year = birth_date.year();
-
         if year < 1700 {
-            return Err(CodiceFiscaleError::InvalidYear);
+            return Err(CFError::InvalidYear);
         }
 
         let month = Self::MONTH_CODES[birth_date.month0() as usize];
@@ -81,23 +89,26 @@ impl CodiceFiscale {
         Ok(format!("{year:02}{month}{day:02}", year = year % 100))
     }
 
-    // TODO: Handle the possibility of not finding the place, right now it just crashes
-    fn birth_place_code(city: &str, province: &str) -> Option<String> {
+    fn birth_place_code(city: &str, province: &str) -> CFResult<Option<String>> {
+        if !is_alpha_or_space(city) || !is_alpha_or_space(province) {
+            return Err(CFError::InvalidString);
+        }
+
         let municipality = city.replace(' ', "-").to_ascii_lowercase();
         let province = province.to_ascii_uppercase();
 
         let key = format!("{municipality},{province}");
 
         if let Some(active_found) = ACTIVE_PLACES.get(&key) {
-            return Some(active_found.to_string());
+            return Ok(Some(active_found.to_string()));
         }
 
-        INACTIVE_PLACES.get(&key).map(|p| p.to_string())
+        Ok(INACTIVE_PLACES.get(&key).map(|p| p.to_string()))
     }
 
-    fn compute_checksum(partial_cf: &str) -> Result<char, CodiceFiscaleError> {
+    fn compute_checksum(partial_cf: &str) -> CFResult<char> {
         if partial_cf.len() != 15 {
-            return Err(CodiceFiscaleError::InvalidChecksumInput);
+            return Err(CFError::InvalidChecksumInput);
         }
 
         let partial_cf = partial_cf.to_uppercase();
@@ -119,19 +130,30 @@ impl CodiceFiscale {
     }
 }
 
+fn is_alpha_or_space(string: &str) -> bool {
+    !string.is_empty()
+        && string
+            .as_bytes()
+            .iter()
+            .all(|&b| b == b' ' || b.is_ascii_alphabetic())
+}
+
 impl TryFrom<&Subject> for CodiceFiscale {
-    type Error = CodiceFiscaleError;
+    type Error = CFError;
 
     fn try_from(value: &Subject) -> Result<Self, Self::Error> {
         let mut output = String::with_capacity(16);
 
-        output.push_str(&Self::last_name_code(&value.last_name));
-        output.push_str(&Self::first_name_code(&value.first_name));
+        output.push_str(&Self::last_name_code(&value.last_name)?);
+        output.push_str(&Self::first_name_code(&value.first_name)?);
         output.push_str(&Self::birth_date_code(value.birth_date, value.gender)?);
 
-        let place_code = Self::birth_place_code(&value.birth_place, &value.birth_province)
+        let place_code = Self::birth_place_code(&value.birth_place, &value.birth_province)?
             .ok_or(Self::Error::BelfioreCodeNotFound)?;
         output.push_str(&place_code);
+
+        dbg!(&output);
+
         output.push(Self::compute_checksum(&output)?);
 
         Ok(Self(output))
@@ -139,21 +161,21 @@ impl TryFrom<&Subject> for CodiceFiscale {
 }
 
 #[derive(Debug)]
-pub enum CodiceFiscaleError {
+pub enum CFError {
     BelfioreCodeNotFound,
     InvalidYear,
     InvalidChecksumInput,
+    InvalidString,
 }
 
-impl Error for CodiceFiscaleError {}
-impl std::fmt::Display for CodiceFiscaleError {
+impl Error for CFError {}
+impl std::fmt::Display for CFError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let message = match self {
             Self::BelfioreCodeNotFound => "could not find belfiore code for this city and province",
             Self::InvalidYear => "the year must be greater than 1700",
-            Self::InvalidChecksumInput => {
-                "could not compute checksum because input was not 15 characters long"
-            }
+            Self::InvalidChecksumInput => "input must be 15 characters long",
+            Self::InvalidString => "characters must be alphabetic or a space",
         };
 
         write!(f, "{message}")
@@ -166,42 +188,50 @@ mod tests {
 
     #[test]
     fn test_last_name_code_enough_consonants() {
-        assert_eq!(&CodiceFiscale::last_name_code("Rossi"), "RSS");
+        assert_eq!(&CodiceFiscale::last_name_code("Rossi").unwrap(), "RSS");
     }
 
     #[test]
     fn test_last_name_code_vowels_needed() {
-        assert_eq!(&CodiceFiscale::last_name_code("Bigi"), "BGI");
+        assert_eq!(&CodiceFiscale::last_name_code("Bigi").unwrap(), "BGI");
     }
 
     #[test]
     fn test_last_name_code_space_inside() {
-        assert_eq!(&CodiceFiscale::last_name_code("De Rossi"), "DRS");
+        assert_eq!(&CodiceFiscale::last_name_code("De Rossi").unwrap(), "DRS");
     }
 
     #[test]
     fn test_last_name_code_short() {
-        assert_eq!(&CodiceFiscale::last_name_code("Yu"), "YUX");
+        assert_eq!(&CodiceFiscale::last_name_code("Yu").unwrap(), "YUX");
     }
 
     #[test]
     fn test_first_name_consonants() {
-        assert_eq!(&CodiceFiscale::first_name_code("Massimo"), "MSM");
+        assert_eq!(&CodiceFiscale::first_name_code("Massimo").unwrap(), "MSM");
     }
 
     #[test]
     fn test_first_name_vowels_needed() {
-        assert_eq!(&CodiceFiscale::first_name_code("Mario"), "MRA");
+        assert_eq!(&CodiceFiscale::first_name_code("Mario").unwrap(), "MRA");
     }
 
     #[test]
     fn test_first_name_space_inside() {
-        assert_eq!(&CodiceFiscale::first_name_code("Maria Teresa"), "MTR");
+        assert_eq!(
+            &CodiceFiscale::first_name_code("Maria Teresa").unwrap(),
+            "MTR"
+        );
     }
 
     #[test]
     fn test_first_name_short() {
-        assert_eq!(&CodiceFiscale::first_name_code("Li"), "LIX");
+        assert_eq!(&CodiceFiscale::first_name_code("Li").unwrap(), "LIX");
+    }
+
+    #[test]
+    fn test_first_name_super_short() {
+        assert_eq!(&CodiceFiscale::first_name_code("W").unwrap(), "WXX");
     }
 
     #[test]
@@ -245,45 +275,40 @@ mod tests {
     #[test]
     fn test_birth_place() {
         let res = CodiceFiscale::birth_place_code("Abano", "PD");
-        assert_eq!(res.as_deref(), Some("A001"));
+        assert_eq!(res.unwrap().as_deref(), Some("A001"));
     }
 
     #[test]
     fn test_birth_place_not_found() {
         let res = CodiceFiscale::birth_place_code("I dont exist", "PD");
-        assert_eq!(res.as_deref(), None);
+        assert_eq!(res.unwrap().as_deref(), None);
     }
 
     #[test]
     fn test_checksum_correct_1() {
-        assert_eq!(
-            CodiceFiscale::compute_checksum("RSSMRA70A41F205").unwrap(),
-            'Z'
-        );
+        let res = CodiceFiscale::compute_checksum("RSSMRA70A41F205").unwrap();
+        assert_eq!(res, 'Z');
     }
 
     #[test]
     fn test_checksum_correct_2() {
-        assert_eq!(
-            CodiceFiscale::compute_checksum("RSSRRT80A01D229").unwrap(),
-            'D'
-        );
+        let res = CodiceFiscale::compute_checksum("RSSRRT80A01D229").unwrap();
+        assert_eq!(res, 'D');
     }
 
     #[test]
     fn test_checksum_correct_3() {
-        assert_eq!(
-            CodiceFiscale::compute_checksum("GLNGCR56P10G224").unwrap(),
-            'Q'
-        );
+        let res = CodiceFiscale::compute_checksum("GLNGCR56P10G224").unwrap();
+        assert_eq!(res, 'Q');
     }
 
     #[test]
+    fn test_checksum_correct_4() {}
+
+    #[test]
     fn test_checksum_lowercase() {
-        assert_eq!(
-            CodiceFiscale::compute_checksum("rssmra70a41f205").unwrap(),
-            'Z'
-        );
+        let res = CodiceFiscale::compute_checksum("rssmra70a41f205").unwrap();
+        assert_eq!(res, 'Z');
     }
 
     #[test]
@@ -328,5 +353,10 @@ mod tests {
             CodiceFiscale::try_from(&subject).unwrap().get(),
             "GLNGCR56P10G224Q"
         );
+    }
+
+    #[test]
+    fn test_is_alpha_space_short() {
+        assert!(is_alpha_or_space("W"));
     }
 }
