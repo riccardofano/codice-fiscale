@@ -5,12 +5,13 @@ pub use chrono::NaiveDate;
 
 include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
 
-#[derive(PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum Gender {
     Male,
     Female,
 }
 
+#[derive(Debug)]
 pub struct Subject {
     pub first_name: String,
     pub last_name: String,

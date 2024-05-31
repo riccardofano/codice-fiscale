@@ -9,3 +9,12 @@ phf = "0.11.2"
 
 [build-dependencies]
 phf_codegen = "0.11.2"
+
+[dev-dependencies]
+criterion = "0.5.1"
+fake = { version = "2.9.2", features = ["chrono"] }
+rand = "0.8.5"
+
+[[bench]]
+name = "generate"
+harness = false
