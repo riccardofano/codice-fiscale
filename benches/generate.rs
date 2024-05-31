@@ -6,10 +6,8 @@ use rand::{thread_rng, Rng};
 use codice_fiscale::{CodiceFiscale, Gender, NaiveDate, Subject, ACTIVE_PLACES, INACTIVE_PLACES};
 
 const GENDERS: [Gender; 2] = [Gender::Male, Gender::Female];
-const ALLOWED_CHARS: [char; 27] = [
-    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
-    'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ',
-];
+#[rustfmt::skip]
+const ALLOWED_CHARS: [char; 27] = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',' '];
 
 fn random_name(rng: &mut ThreadRng) -> String {
     let length = rng.gen_range(1..20);
@@ -25,7 +23,7 @@ fn random_place(rng: &mut ThreadRng) -> (String, String) {
     let place = pool.keys().choose(rng).unwrap();
     place
         .split_once(',')
-        .map(|(c, p)| (c.into(), p.into()))
+        .map(|(c, p)| (c.replace('-', " "), p.into()))
         .unwrap()
 }
 
