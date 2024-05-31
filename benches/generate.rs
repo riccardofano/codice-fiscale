@@ -55,7 +55,7 @@ fn bench(c: &mut Criterion) {
     c.bench_function("random subjects", |b| {
         b.iter_batched(
             create_random_subject,
-            |subject| CodiceFiscale::try_from(&subject),
+            |subject| CodiceFiscale::try_from(&subject).unwrap_or_else(|_| panic!("{subject:?}")),
             BatchSize::SmallInput,
         )
     });
