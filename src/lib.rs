@@ -30,9 +30,7 @@ impl CodiceFiscale {
     const VOWELS: [char; 6] = ['A', 'E', 'I', 'O', 'U', ' '];
     #[rustfmt::skip]
     const CONSONANTS: [char; 22] = [ 'B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z', ' ' ];
-
     const MONTH_CODES: [char; 12] = ['A', 'B', 'C', 'D', 'E', 'H', 'L', 'M', 'P', 'R', 'S', 'T'];
-
     const CHECK_CODE_NUM_ODD: [usize; 10] = [1, 0, 5, 7, 9, 13, 15, 17, 19, 21];
     const CHECK_CODE_NUM_EVEN: [usize; 10] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
     #[rustfmt::skip]
@@ -358,5 +356,24 @@ mod tests {
     #[test]
     fn test_is_alpha_space_short() {
         assert!(is_alpha_or_space("W"));
+    }
+
+    #[test]
+    fn test_is_alpha_space_empty_string() {
+        assert!(!is_alpha_or_space(""));
+    }
+
+    #[test]
+    fn test_is_alpha_space_empty_accents() {
+        assert!(!is_alpha_or_space("à"));
+        assert!(!is_alpha_or_space("á"));
+        assert!(!is_alpha_or_space("è"));
+        assert!(!is_alpha_or_space("é"));
+        assert!(!is_alpha_or_space("ì"));
+        assert!(!is_alpha_or_space("í"));
+        assert!(!is_alpha_or_space("ò"));
+        assert!(!is_alpha_or_space("ó"));
+        assert!(!is_alpha_or_space("ù"));
+        assert!(!is_alpha_or_space("ú"));
     }
 }
