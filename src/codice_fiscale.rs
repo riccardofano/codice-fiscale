@@ -33,7 +33,13 @@ pub struct CodiceFiscale(String);
 
 impl CodiceFiscale {
     pub fn from_str(string: &str) -> CFResult<CodiceFiscale> {
-        // TODO: verify CF
+        if string.len() != 16 {
+            return Err(CFError::InvalidLength);
+        }
+        if string.chars().any(|c| !c.is_alphanumeric()) {
+            return Err(CFError::InvalidString);
+        }
+
         Ok(CodiceFiscale(string.to_owned()))
     }
 
@@ -168,6 +174,7 @@ pub enum CFError {
     InvalidYear,
     InvalidChecksumInput,
     InvalidString,
+    InvalidLength,
 }
 
 impl Error for CFError {}
@@ -178,6 +185,7 @@ impl std::fmt::Display for CFError {
             Self::InvalidYear => "the year must be greater than 1700",
             Self::InvalidChecksumInput => "input must be 15 characters long",
             Self::InvalidString => "characters must be alphabetic or a space",
+            Self::InvalidLength => "codice fiscale must be 16 characters long",
         };
 
         write!(f, "{message}")
