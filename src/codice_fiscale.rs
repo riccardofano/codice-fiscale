@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::sync::OnceLock;
 
 use chrono::Datelike;
 use chrono::NaiveDate;
@@ -23,6 +24,7 @@ const CHECK_CODE_LET_EVEN: [usize; 26] = [
 ];
 const OMOCODE_POSITIONS: [usize; 7] = [6, 7, 9, 10, 12, 13, 14];
 const OMOCODE_LETTERS: [char; 10] = ['L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V'];
+static OMOCODE_SUBSETS: OnceLock<Vec<Vec<usize>>> = OnceLock::new();
 
 type CFResult<T> = Result<T, CFError>;
 
@@ -114,12 +116,12 @@ impl CodiceFiscale {
 
     fn all_omocodes(&self) -> Vec<CodiceFiscale> {
         let cf = &self.0.as_bytes()[0..15];
-        let subsets = all_subsets(&OMOCODE_POSITIONS);
+        let subsets = OMOCODE_SUBSETS.get_or_init(|| all_subsets(&OMOCODE_POSITIONS));
 
         let mut all_cfs = Vec::new();
         for subset in subsets {
             let mut code = cf.to_vec();
-            for position in subset {
+            for &position in subset {
                 let digit = code[position] - b'0';
                 code[position] = OMOCODE_LETTERS[digit as usize] as u8;
             }
