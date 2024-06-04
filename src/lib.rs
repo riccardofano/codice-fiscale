@@ -164,6 +164,34 @@ impl std::fmt::Display for CFError {
     }
 }
 
+/// Returns all subsets the elements of an array excepts the empty set
+/// Which amounts to 2^n - 1 sets
+fn all_subsets(array: &[usize]) -> Vec<Vec<usize>> {
+    let mut subsets = Vec::new();
+    if array.is_empty() {
+        return subsets;
+    }
+
+    let last_index = array.len() - 1;
+    let last_element = array[last_index];
+    subsets.push(vec![last_element]);
+
+    if last_index == 0 {
+        return subsets;
+    }
+
+    let sub_array = &array[0..last_index];
+    let sub_subsets = all_subsets(sub_array);
+
+    for mut subset in sub_subsets {
+        subsets.push(subset.clone());
+        subset.push(last_element);
+        subsets.push(subset);
+    }
+
+    subsets
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -343,4 +371,22 @@ mod tests {
             "GLNGCR56P10G224Q"
         );
     }
+
+    #[test]
+    fn test_all_subsets() {
+        let expected = vec![
+            vec![3],
+            vec![2],
+            vec![2, 3],
+            vec![1],
+            vec![1, 3],
+            vec![1, 2],
+            vec![1, 2, 3],
+        ];
+
+        assert_eq!(all_subsets(&[1, 2, 3]), expected);
+        // 2 to the power of 7 = 128, but that includes the empty case so 127
+        assert_eq!(all_subsets(&[1, 2, 3, 4, 5, 6, 7]).len(), 127);
+    }
+
 }
