@@ -3,8 +3,7 @@ use rand::rngs::ThreadRng;
 use rand::seq::{IteratorRandom, SliceRandom};
 use rand::{thread_rng, Rng};
 
-use codice_fiscale::string::CFString;
-use codice_fiscale::{CodiceFiscale, Gender, NaiveDate, Subject, ACTIVE_PLACES};
+use codice_fiscale::{CFString, CodiceFiscale, Gender, NaiveDate, Subject, ACTIVE_PLACES};
 const GENDERS: [Gender; 2] = [Gender::Male, Gender::Female];
 #[rustfmt::skip]
 const ALLOWED_CHARS: [char; 27] = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',' '];
