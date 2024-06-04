@@ -43,6 +43,28 @@ impl CodiceFiscale {
         Ok(CodiceFiscale(string.to_owned()))
     }
 
+    pub fn normalize(&self) -> CFResult<CodiceFiscale> {
+        let mut bytes = self.0.as_bytes()[0..15].to_vec();
+        for position in OMOCODE_POSITIONS {
+            let current = bytes[position] as char;
+            if current.is_ascii_digit() {
+                continue;
+            }
+
+            let letter_index = OMOCODE_LETTERS
+                .iter()
+                .position(|&l| l == current)
+                .ok_or(CFError::InvalidOmocodeLetter)?;
+            bytes[position] = letter_index as u8 + b'0';
+        }
+
+        let mut string = String::from_utf8(bytes).unwrap();
+        let checksum = Self::compute_checksum(&string)?;
+        string.push(checksum);
+
+        Ok(CodiceFiscale(string))
+    }
+
     pub fn get(&self) -> &str {
         &self.0
     }
@@ -143,6 +165,12 @@ impl CodiceFiscale {
 
         all_cfs
     }
+
+    fn decode_date(cf: &str) -> CFResult<(NaiveDate, Gender)> {
+        let code = &cf.as_bytes()[6..11];
+
+        todo!();
+    }
 }
 
 impl TryFrom<&Subject> for CodiceFiscale {
@@ -175,6 +203,7 @@ pub enum CFError {
     InvalidChecksumInput,
     InvalidString,
     InvalidLength,
+    InvalidOmocodeLetter,
 }
 
 impl Error for CFError {}
@@ -186,6 +215,7 @@ impl std::fmt::Display for CFError {
             Self::InvalidChecksumInput => "input must be 15 characters long",
             Self::InvalidString => "characters must be alphabetic or a space",
             Self::InvalidLength => "codice fiscale must be 16 characters long",
+            Self::InvalidOmocodeLetter => "codice fiscale contains invalid omocode letter",
         };
 
         write!(f, "{message}")
@@ -514,5 +544,19 @@ mod tests {
         all_strs.sort();
 
         assert_eq!(all_strs, expected);
+    }
+
+    #[test]
+    fn test_normalize_from_omocode() {
+        let expected = "CCCFBA85D03L219P";
+
+        let cf = CodiceFiscale("CCCFBA85DLPLNM9W".into());
+        assert_eq!(cf.normalize().unwrap().get(), expected);
+
+        let cf = CodiceFiscale("CCCFBAURDLPLNMVU".into());
+        assert_eq!(cf.normalize().unwrap().get(), expected);
+
+        let cf = CodiceFiscale("CCCFBA85D03LN19E".into());
+        assert_eq!(cf.normalize().unwrap().get(), expected);
     }
 }
