@@ -40,6 +40,8 @@ impl CodiceFiscale {
     const CHECK_CODE_LET_ODD: [usize; 26] = [ 1, 0, 5, 7, 9, 13, 15, 17, 19, 21, 2, 4, 18, 20, 11, 3, 6, 8, 12, 14, 16, 10, 22, 25, 24, 23 ];
     #[rustfmt::skip]
     const CHECK_CODE_LET_EVEN: [usize; 26] = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 ];
+    const OMOCODE_POSITIONS: [usize; 7] = [6, 7, 9, 10, 12, 13, 14];
+    const OMOCODE_LETTERS: [char; 10] = ['L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V'];
 
     pub fn get(&self) -> &str {
         &self.0
@@ -116,6 +118,35 @@ impl CodiceFiscale {
 
         sum %= 26;
         Ok((sum as u8 + b'A') as char)
+    }
+
+    fn all_omocodes(&self) -> Vec<CodiceFiscale> {
+        let cf = &self.0.as_bytes()[0..15];
+        let subsets = all_subsets(&Self::OMOCODE_POSITIONS);
+
+        let mut all_cfs = Vec::new();
+        for subset in subsets {
+            let mut code = cf.to_vec();
+            for position in subset {
+                let digit = code[position] - b'0';
+                code[position] = Self::OMOCODE_LETTERS[digit as usize] as u8;
+            }
+            let code_as_str = std::str::from_utf8(&code).unwrap();
+            let checksum = Self::compute_checksum(&code_as_str).unwrap();
+            all_cfs.push(CodiceFiscale(format!("{code_as_str}{checksum}")));
+        }
+
+        all_cfs
+    }
+
+    fn convert_position(cf: &[u8], position: usize) -> CodiceFiscale {
+        let converted = cf[position];
+        let cf = format!(
+            "{}{converted}{}",
+            from_utf8(&cf[0..position]).unwrap(),
+            from_utf8(&cf[position + 1..]).unwrap()
+        );
+        CodiceFiscale(cf)
     }
 }
 
@@ -389,4 +420,147 @@ mod tests {
         assert_eq!(all_subsets(&[1, 2, 3, 4, 5, 6, 7]).len(), 127);
     }
 
+    #[test]
+    fn test_all_omocodes() {
+        // From https://github.com/fabiocaccamo/python-codicefiscale/blob/main/tests/test_codicefiscale.py#L598
+        let mut expected = vec![
+            "CCCFBA85D03L21VE",
+            "CCCFBA85D03L2M9A",
+            "CCCFBA85D03LN19E",
+            "CCCFBA85D0PL219L",
+            "CCCFBA85DL3L219A",
+            "CCCFBA8RD03L219B",
+            "CCCFBAU5D03L219M",
+            "CCCFBA85D03L2MVP",
+            "CCCFBA85D03LN1VT",
+            "CCCFBA85D0PL21VA",
+            "CCCFBA85DL3L21VP",
+            "CCCFBA8RD03L21VQ",
+            "CCCFBAU5D03L21VB",
+            "CCCFBA85D03LNM9P",
+            "CCCFBA85D0PL2M9W",
+            "CCCFBA85DL3L2M9L",
+            "CCCFBA8RD03L2M9M",
+            "CCCFBAU5D03L2M9X",
+            "CCCFBA85D0PLN19A",
+            "CCCFBA85DL3LN19P",
+            "CCCFBA8RD03LN19Q",
+            "CCCFBAU5D03LN19B",
+            "CCCFBA85DLPL219W",
+            "CCCFBA8RD0PL219X",
+            "CCCFBAU5D0PL219I",
+            "CCCFBA8RDL3L219M",
+            "CCCFBAU5DL3L219X",
+            "CCCFBAURD03L219Y",
+            "CCCFBA85D03LNMVE",
+            "CCCFBA85D0PL2MVL",
+            "CCCFBA85DL3L2MVA",
+            "CCCFBA8RD03L2MVB",
+            "CCCFBAU5D03L2MVM",
+            "CCCFBA85D0PLN1VP",
+            "CCCFBA85DL3LN1VE",
+            "CCCFBA8RD03LN1VF",
+            "CCCFBAU5D03LN1VQ",
+            "CCCFBA85DLPL21VL",
+            "CCCFBA8RD0PL21VM",
+            "CCCFBAU5D0PL21VX",
+            "CCCFBA8RDL3L21VB",
+            "CCCFBAU5DL3L21VM",
+            "CCCFBAURD03L21VN",
+            "CCCFBA85D0PLNM9L",
+            "CCCFBA85DL3LNM9A",
+            "CCCFBA8RD03LNM9B",
+            "CCCFBAU5D03LNM9M",
+            "CCCFBA85DLPL2M9H",
+            "CCCFBA8RD0PL2M9I",
+            "CCCFBAU5D0PL2M9T",
+            "CCCFBA8RDL3L2M9X",
+            "CCCFBAU5DL3L2M9I",
+            "CCCFBAURD03L2M9J",
+            "CCCFBA85DLPLN19L",
+            "CCCFBA8RD0PLN19M",
+            "CCCFBAU5D0PLN19X",
+            "CCCFBA8RDL3LN19B",
+            "CCCFBAU5DL3LN19M",
+            "CCCFBAURD03LN19N",
+            "CCCFBA8RDLPL219I",
+            "CCCFBAU5DLPL219T",
+            "CCCFBAURD0PL219U",
+            "CCCFBAURDL3L219J",
+            "CCCFBA85D0PLNMVA",
+            "CCCFBA85DL3LNMVP",
+            "CCCFBA8RD03LNMVQ",
+            "CCCFBAU5D03LNMVB",
+            "CCCFBA85DLPL2MVW",
+            "CCCFBA8RD0PL2MVX",
+            "CCCFBAU5D0PL2MVI",
+            "CCCFBA8RDL3L2MVM",
+            "CCCFBAU5DL3L2MVX",
+            "CCCFBAURD03L2MVY",
+            "CCCFBA85DLPLN1VA",
+            "CCCFBA8RD0PLN1VB",
+            "CCCFBAU5D0PLN1VM",
+            "CCCFBA8RDL3LN1VQ",
+            "CCCFBAU5DL3LN1VB",
+            "CCCFBAURD03LN1VC",
+            "CCCFBA8RDLPL21VX",
+            "CCCFBAU5DLPL21VI",
+            "CCCFBAURD0PL21VJ",
+            "CCCFBAURDL3L21VY",
+            "CCCFBA85DLPLNM9W",
+            "CCCFBA8RD0PLNM9X",
+            "CCCFBAU5D0PLNM9I",
+            "CCCFBA8RDL3LNM9M",
+            "CCCFBAU5DL3LNM9X",
+            "CCCFBAURD03LNM9Y",
+            "CCCFBA8RDLPL2M9T",
+            "CCCFBAU5DLPL2M9E",
+            "CCCFBAURD0PL2M9F",
+            "CCCFBAURDL3L2M9U",
+            "CCCFBA8RDLPLN19X",
+            "CCCFBAU5DLPLN19I",
+            "CCCFBAURD0PLN19J",
+            "CCCFBAURDL3LN19Y",
+            "CCCFBAURDLPL219F",
+            "CCCFBA85DLPLNMVL",
+            "CCCFBA8RD0PLNMVM",
+            "CCCFBAU5D0PLNMVX",
+            "CCCFBA8RDL3LNMVB",
+            "CCCFBAU5DL3LNMVM",
+            "CCCFBAURD03LNMVN",
+            "CCCFBA8RDLPL2MVI",
+            "CCCFBAU5DLPL2MVT",
+            "CCCFBAURD0PL2MVU",
+            "CCCFBAURDL3L2MVJ",
+            "CCCFBA8RDLPLN1VM",
+            "CCCFBAU5DLPLN1VX",
+            "CCCFBAURD0PLN1VY",
+            "CCCFBAURDL3LN1VN",
+            "CCCFBAURDLPL21VU",
+            "CCCFBA8RDLPLNM9I",
+            "CCCFBAU5DLPLNM9T",
+            "CCCFBAURD0PLNM9U",
+            "CCCFBAURDL3LNM9J",
+            "CCCFBAURDLPL2M9Q",
+            "CCCFBAURDLPLN19U",
+            "CCCFBA8RDLPLNMVX",
+            "CCCFBAU5DLPLNMVI",
+            "CCCFBAURD0PLNMVJ",
+            "CCCFBAURDL3LNMVY",
+            "CCCFBAURDLPL2MVF",
+            "CCCFBAURDLPLN1VJ",
+            "CCCFBAURDLPLNM9F",
+            "CCCFBAURDLPLNMVU",
+        ];
+        expected.sort();
+
+        let all_omocodes = CodiceFiscale("CCCFBA85D03L219P".into()).all_omocodes();
+        let mut all_strs = all_omocodes
+            .iter()
+            .map(|cf| cf.0.as_str())
+            .collect::<Vec<_>>();
+        all_strs.sort();
+
+        assert_eq!(all_strs, expected);
+    }
 }
