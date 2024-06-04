@@ -45,7 +45,7 @@ fn create_random_subject() -> Subject {
     }
 }
 
-fn bench(c: &mut Criterion) {
+fn bench_subjects(c: &mut Criterion) {
     c.bench_function("random subjects", |b| {
         b.iter_batched(
             create_random_subject,
@@ -57,5 +57,10 @@ fn bench(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, bench);
+fn bench_omocodes(c: &mut Criterion) {
+    let cf = CodiceFiscale::from_str("CCCFBA85D03L219P").unwrap();
+    c.bench_function("all omocodes", |b| b.iter(|| cf.all_omocodes()));
+}
+
+criterion_group!(benches, bench_subjects, bench_omocodes);
 criterion_main!(benches);

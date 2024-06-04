@@ -32,6 +32,11 @@ type CFResult<T> = Result<T, CFError>;
 pub struct CodiceFiscale(String);
 
 impl CodiceFiscale {
+    pub fn from_str(string: &str) -> CFResult<CodiceFiscale> {
+        // TODO: verify CF
+        Ok(CodiceFiscale(string.to_owned()))
+    }
+
     pub fn get(&self) -> &str {
         &self.0
     }
@@ -107,14 +112,14 @@ impl CodiceFiscale {
         Ok((sum as u8 + b'A') as char)
     }
 
-    fn is_omocode(&self) -> bool {
+    pub fn is_omocode(&self) -> bool {
         let cf = self.0.as_bytes();
         OMOCODE_POSITIONS
             .iter()
             .any(|&pos| !cf[pos].is_ascii_digit())
     }
 
-    fn all_omocodes(&self) -> Vec<CodiceFiscale> {
+    pub fn all_omocodes(&self) -> Vec<CodiceFiscale> {
         let cf = &self.0.as_bytes()[0..15];
         let subsets = OMOCODE_SUBSETS.get_or_init(|| all_subsets(&OMOCODE_POSITIONS));
 
