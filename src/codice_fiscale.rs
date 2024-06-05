@@ -31,18 +31,18 @@ static OMOCODE_SUBSETS: OnceLock<Vec<Vec<usize>>> = OnceLock::new();
 pub struct CodiceFiscale(String);
 
 impl CodiceFiscale {
-    pub fn from_str(string: &str) -> Result<CodiceFiscale, ValidationError> {
+    pub fn from_str(string: &str) -> Result<Self, ValidationError> {
         if string.len() != 16 {
-            return Err(ValidationError::InvalidLength);
+            return Err(ValidationError::IncorrectLength(16));
         }
         if string.chars().any(|c| !c.is_alphanumeric()) {
-            return Err(ValidationError::InvalidString);
+            return Err(ValidationError::NonAlphanumeric);
         }
 
         Ok(CodiceFiscale(string.to_owned()))
     }
 
-    pub fn normalize(&self) -> Result<CodiceFiscale, ValidationError> {
+    pub fn normalize(&self) -> Result<Self, ValidationError> {
         let mut bytes = self.0.as_bytes()[0..15].to_vec();
         for position in OMOCODE_POSITIONS {
             let current = bytes[position] as char;
@@ -59,7 +59,7 @@ impl CodiceFiscale {
 
         let mut string = String::from_utf8(bytes).unwrap();
         let checksum =
-            Self::compute_checksum(&string).map_err(|_| ValidationError::InvalidChecksumInput)?;
+            Self::compute_checksum(&string).map_err(|_| ValidationError::IncorrectLength(15))?;
         string.push(checksum);
 
         Ok(CodiceFiscale(string))
@@ -91,7 +91,7 @@ impl CodiceFiscale {
     fn birth_date_code(birth_date: NaiveDate, gender: Gender) -> Result<String, GenerationError> {
         let year = birth_date.year();
         if year < 1700 {
-            return Err(GenerationError::InvalidYear);
+            return Err(GenerationError::YearTooFarPast);
         }
 
         let month = MONTH_CODES[birth_date.month0() as usize];
@@ -119,7 +119,7 @@ impl CodiceFiscale {
 
     fn compute_checksum(partial_cf: &str) -> Result<char, GenerationError> {
         if partial_cf.len() != 15 {
-            return Err(GenerationError::InvalidChecksumInput);
+            return Err(GenerationError::IncorrectChecksumInputLength);
         }
 
         let partial_cf = partial_cf.to_uppercase();
@@ -159,7 +159,7 @@ impl CodiceFiscale {
                 code[position] = OMOCODE_LETTERS[digit as usize] as u8;
             }
             let code_as_str = std::str::from_utf8(&code).unwrap();
-            let checksum = Self::compute_checksum(&code_as_str).unwrap();
+            let checksum = Self::compute_checksum(code_as_str).unwrap();
             all_cfs.push(CodiceFiscale(format!("{code_as_str}{checksum}")));
         }
 
@@ -210,7 +210,6 @@ impl TryFrom<&Subject> for CodiceFiscale {
         )
         .ok_or(Self::Error::BelfioreCodeNotFound)?;
         output.push_str(&place_code);
-
         output.push(Self::compute_checksum(&output)?);
 
         Ok(Self(output))
@@ -220,19 +219,17 @@ impl TryFrom<&Subject> for CodiceFiscale {
 #[derive(Debug, PartialEq, Eq)]
 pub enum GenerationError {
     BelfioreCodeNotFound,
-    InvalidChecksumInput,
-    InvalidDate,
-    InvalidYear,
+    IncorrectChecksumInputLength,
+    YearTooFarPast,
 }
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum ValidationError {
-    InvalidChecksumInput,
+    IncorrectLength(usize),
     InvalidDate,
-    InvalidLength,
     InvalidMonthLetter,
     InvalidOmocodeLetter,
-    InvalidString,
+    NonAlphanumeric,
 }
 
 impl Error for GenerationError {}
@@ -241,9 +238,8 @@ impl std::fmt::Display for GenerationError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let message = match self {
             Self::BelfioreCodeNotFound => "could not find belfiore code for this city and province",
-            Self::InvalidYear => "the year must be greater than 1700",
-            Self::InvalidDate => "the codice fiscale does not contain a valid date",
-            Self::InvalidChecksumInput => "input must be 15 characters long",
+            Self::YearTooFarPast => "the year must be greater than 1700",
+            Self::IncorrectChecksumInputLength => "checksum input must be 15 characters long",
         };
 
         write!(f, "{message}")
@@ -253,11 +249,10 @@ impl std::fmt::Display for ValidationError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let message = match self {
             Self::InvalidDate => "the codice fiscale does not contain a valid date",
-            Self::InvalidChecksumInput => "input must be 15 characters long",
-            Self::InvalidLength => "codice fiscale must be 16 characters long",
+            Self::IncorrectLength(len) => return write!(f, "input must be {len} characters long"),
             Self::InvalidOmocodeLetter => "codice fiscale contains invalid omocode letter",
             Self::InvalidMonthLetter => "the letter used for the month is invalid",
-            Self::InvalidString => "characters must be alphabetic or a space",
+            Self::NonAlphanumeric => "characters must be alphabetical letters or numbers",
         };
 
         write!(f, "{message}")

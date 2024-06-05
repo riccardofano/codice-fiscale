@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use criterion::{criterion_group, criterion_main, BatchSize, Criterion};
 use rand::rngs::ThreadRng;
 use rand::seq::{IteratorRandom, SliceRandom};
