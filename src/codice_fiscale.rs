@@ -31,17 +31,6 @@ static OMOCODE_SUBSETS: OnceLock<Vec<Vec<usize>>> = OnceLock::new();
 pub struct CodiceFiscale(String);
 
 impl CodiceFiscale {
-    pub fn from_str(string: &str) -> Result<Self, ValidationError> {
-        if string.len() != 16 {
-            return Err(ValidationError::IncorrectLength(16));
-        }
-        if string.chars().any(|c| !c.is_alphanumeric()) {
-            return Err(ValidationError::NonAlphanumeric);
-        }
-
-        Ok(CodiceFiscale(string.to_owned()))
-    }
-
     pub fn normalize(&self) -> Result<Self, ValidationError> {
         let mut bytes = self.0.as_bytes()[0..15].to_vec();
         for position in OMOCODE_POSITIONS {
@@ -187,6 +176,21 @@ impl CodiceFiscale {
             .ok_or(ValidationError::InvalidDate)?;
 
         Ok((date, gender))
+    }
+}
+
+impl std::str::FromStr for CodiceFiscale {
+    type Err = ValidationError;
+
+    fn from_str(string: &str) -> Result<Self, Self::Err> {
+        if string.len() != 16 {
+            return Err(ValidationError::IncorrectLength(16));
+        }
+        if string.chars().any(|c| !c.is_alphanumeric()) {
+            return Err(ValidationError::NonAlphanumeric);
+        }
+
+        Ok(Self(string.to_owned()))
     }
 }
 
