@@ -177,6 +177,20 @@ impl CodiceFiscale {
 
         Ok((date, gender))
     }
+
+    fn decode_birth_place(cf: &str) -> Option<(&'static str, &'static str)> {
+        let bytes = &cf.as_bytes()[11..15];
+        let code = std::str::from_utf8(bytes).unwrap();
+
+        if let Some((&key, _)) = ACTIVE_PLACES.into_iter().find(|(_, &v)| v == code) {
+            return Some(key.split_once(',').unwrap());
+        };
+
+        INACTIVE_PLACES
+            .into_iter()
+            .find(|(_, &v)| v == code)
+            .and_then(|(&key, _)| key.split_once(','))
+    }
 }
 
 impl std::str::FromStr for CodiceFiscale {
@@ -594,5 +608,29 @@ mod tests {
             CodiceFiscale::decode_date("CCCFBA85D03L219P").unwrap(),
             (expected_date, expected_gender)
         );
+    }
+
+    #[test]
+    fn test_decode_active_place() {
+        let expected_city = "pedivigliano";
+        let expected_province = "CS";
+
+        let res = CodiceFiscale::decode_birth_place("CCCFBA85D03G411P");
+        assert_eq!(res, Some((expected_city, expected_province)));
+    }
+
+    #[test]
+    fn test_decode_inactive_place() {
+        let expected_city = "carano";
+        let expected_province = "TN";
+
+        let res = CodiceFiscale::decode_birth_place("CCCFBA85D03B723P");
+        assert_eq!(res, Some((expected_city, expected_province)));
+    }
+
+    #[test]
+    fn test_decode_unknown_place() {
+        let res = CodiceFiscale::decode_birth_place("CCCFBA85D03C008P");
+        assert_eq!(res, None);
     }
 }
