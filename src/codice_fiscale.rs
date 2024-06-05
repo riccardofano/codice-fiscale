@@ -88,12 +88,8 @@ impl CodiceFiscale {
         }
     }
 
-    fn birth_date_code(birth_date: NaiveDate, gender: Gender) -> Result<String, GenerationError> {
+    fn birth_date_code(birth_date: NaiveDate, gender: Gender) -> String {
         let year = birth_date.year();
-        if year < 1700 {
-            return Err(GenerationError::YearTooFarPast);
-        }
-
         let month = MONTH_CODES[birth_date.month0() as usize];
         let mut day = birth_date.day();
 
@@ -101,7 +97,7 @@ impl CodiceFiscale {
             day += 40;
         }
 
-        Ok(format!("{year:02}{month}{day:02}", year = year % 100))
+        format!("{year:02}{month}{day:02}", year = year % 100)
     }
 
     fn birth_place_code(city: CFString<&str>, province: CFString<&str>) -> Option<String> {
@@ -202,7 +198,7 @@ impl TryFrom<&Subject> for CodiceFiscale {
 
         output.push_str(&Self::last_name_code(value.last_name.as_deref()));
         output.push_str(&Self::first_name_code(value.first_name.as_deref()));
-        output.push_str(&Self::birth_date_code(value.birth_date, value.gender)?);
+        output.push_str(&Self::birth_date_code(value.birth_date, value.gender));
 
         let place_code = Self::birth_place_code(
             value.birth_place.as_deref(),
@@ -220,7 +216,6 @@ impl TryFrom<&Subject> for CodiceFiscale {
 pub enum GenerationError {
     BelfioreCodeNotFound,
     IncorrectChecksumInputLength,
-    YearTooFarPast,
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -238,10 +233,8 @@ impl std::fmt::Display for GenerationError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let message = match self {
             Self::BelfioreCodeNotFound => "could not find belfiore code for this city and province",
-            Self::YearTooFarPast => "the year must be greater than 1700",
             Self::IncorrectChecksumInputLength => "checksum input must be 15 characters long",
         };
-
         write!(f, "{message}")
     }
 }
@@ -254,7 +247,6 @@ impl std::fmt::Display for ValidationError {
             Self::InvalidMonthLetter => "the letter used for the month is invalid",
             Self::NonAlphanumeric => "characters must be alphabetical letters or numbers",
         };
-
         write!(f, "{message}")
     }
 }
@@ -322,7 +314,7 @@ mod tests {
         let birth_date = NaiveDate::from_ymd_opt(2024, 12, 31).unwrap();
 
         let res = CodiceFiscale::birth_date_code(birth_date, Gender::Male);
-        assert_eq!(&res.unwrap(), "24T31");
+        assert_eq!(&res, "24T31");
     }
 
     #[test]
@@ -330,7 +322,7 @@ mod tests {
         let birth_date = NaiveDate::from_ymd_opt(2024, 12, 5).unwrap();
 
         let res = CodiceFiscale::birth_date_code(birth_date, Gender::Male);
-        assert_eq!(&res.unwrap(), "24T05");
+        assert_eq!(&res, "24T05");
     }
 
     #[test]
@@ -338,21 +330,14 @@ mod tests {
         let birth_date = NaiveDate::from_ymd_opt(2024, 12, 5).unwrap();
 
         let res = CodiceFiscale::birth_date_code(birth_date, Gender::Female);
-        assert_eq!(&res.unwrap(), "24T45");
+        assert_eq!(&res, "24T45");
     }
 
     #[test]
     fn test_birth_date_ends_with_0_something() {
         let birth_date = NaiveDate::from_ymd_opt(2003, 12, 6).unwrap();
         let res = CodiceFiscale::birth_date_code(birth_date, Gender::Male);
-        assert_eq!(&res.unwrap(), "03T06");
-    }
-
-    #[test]
-    fn test_birth_date_invalid_year() {
-        let birth_date = NaiveDate::from_ymd_opt(1508, 4, 12).unwrap();
-        let res = CodiceFiscale::birth_date_code(birth_date, Gender::Female);
-        assert!(&res.is_err());
+        assert_eq!(&res, "03T06");
     }
 
     #[test]
