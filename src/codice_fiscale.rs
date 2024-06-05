@@ -3,6 +3,7 @@ use std::sync::OnceLock;
 
 use chrono::Datelike;
 use chrono::NaiveDate;
+use chrono::Utc;
 
 use super::{all_subsets, CFString, Gender, Subject};
 
@@ -167,9 +168,30 @@ impl CodiceFiscale {
     }
 
     fn decode_date(cf: &str) -> CFResult<(NaiveDate, Gender)> {
-        let code = &cf.as_bytes()[6..11];
+        let bytes = &cf.as_bytes()[6..11];
 
-        todo!();
+        let mut year = ((bytes[0] - b'0') * 10 + (bytes[1] - b'0')) as i32;
+        let month = bytes[2] as char;
+        let mut day = (bytes[3] - b'0') * 10 + (bytes[4] - b'0');
+
+        let month = MONTH_CODES
+            .iter()
+            .position(|&c| c == month)
+            .ok_or(CFError::InvalidMonthLetter)?;
+        let gender = if day > 40 {
+            day -= 40;
+            Gender::Female
+        } else {
+            Gender::Male
+        };
+
+        let curr_year = Utc::now().year();
+        year += if curr_year % 100 > year { 2000 } else { 1900 };
+
+        let date = NaiveDate::from_ymd_opt(year, (month + 1) as u32, day as u32)
+            .ok_or(CFError::InvalidDate)?;
+
+        Ok((date, gender))
     }
 }
 
@@ -200,10 +222,12 @@ impl TryFrom<&Subject> for CodiceFiscale {
 pub enum CFError {
     BelfioreCodeNotFound,
     InvalidYear,
+    InvalidDate,
     InvalidChecksumInput,
     InvalidString,
     InvalidLength,
     InvalidOmocodeLetter,
+    InvalidMonthLetter,
 }
 
 impl Error for CFError {}
@@ -212,10 +236,12 @@ impl std::fmt::Display for CFError {
         let message = match self {
             Self::BelfioreCodeNotFound => "could not find belfiore code for this city and province",
             Self::InvalidYear => "the year must be greater than 1700",
+            Self::InvalidDate => "the codice fiscale does not contain a valid date",
             Self::InvalidChecksumInput => "input must be 15 characters long",
             Self::InvalidString => "characters must be alphabetic or a space",
             Self::InvalidLength => "codice fiscale must be 16 characters long",
             Self::InvalidOmocodeLetter => "codice fiscale contains invalid omocode letter",
+            Self::InvalidMonthLetter => "the letter used for the month is invalid",
         };
 
         write!(f, "{message}")
@@ -558,5 +584,15 @@ mod tests {
 
         let cf = CodiceFiscale("CCCFBA85D03LN19E".into());
         assert_eq!(cf.normalize().unwrap().get(), expected);
+    }
+
+    #[test]
+    fn test_decode_date() {
+        let expected_date = NaiveDate::from_ymd_opt(1985, 4, 3).unwrap();
+        let expected_gender = Gender::Male;
+        assert_eq!(
+            CodiceFiscale::decode_date("CCCFBA85D03L219P").unwrap(),
+            (expected_date, expected_gender)
+        );
     }
 }
