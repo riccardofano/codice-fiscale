@@ -5,6 +5,8 @@ use chrono::Datelike;
 use chrono::NaiveDate;
 use chrono::Utc;
 
+use crate::DecodedData;
+
 use super::{all_subsets, CFString, Gender, Subject};
 
 include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
@@ -31,6 +33,22 @@ static OMOCODE_SUBSETS: OnceLock<Vec<Vec<usize>>> = OnceLock::new();
 pub struct CodiceFiscale(String);
 
 impl CodiceFiscale {
+    pub fn decode(&self) -> Result<DecodedData, ValidationError> {
+        let code = self.normalize()?;
+        let code = code.get();
+
+        let (birth_date, gender) = Self::decode_date(code)?;
+        let (birth_place, birth_province) =
+            Self::decode_birth_place(code).ok_or(ValidationError::UnknownPlaceCode)?;
+
+        Ok(DecodedData {
+            birth_date,
+            gender,
+            birth_place,
+            birth_province,
+        })
+    }
+
     pub fn normalize(&self) -> Result<Self, ValidationError> {
         let mut bytes = self.0.as_bytes()[0..15].to_vec();
         for position in OMOCODE_POSITIONS {
@@ -58,14 +76,14 @@ impl CodiceFiscale {
         &self.0
     }
 
-    fn last_name_code(last_name: CFString<&str>) -> String {
+    pub fn last_name_code(last_name: CFString<&str>) -> String {
         let consonants = last_name.to_ascii_uppercase().replace(VOWELS, "");
         let vowels = last_name.to_ascii_uppercase().replace(CONSONANTS, "");
 
         format!("{consonants}{vowels}XXX")[..3].to_owned()
     }
 
-    fn first_name_code(first_name: CFString<&str>) -> String {
+    pub fn first_name_code(first_name: CFString<&str>) -> String {
         let consonants = first_name.to_ascii_uppercase().replace(VOWELS, "");
         let b = consonants.as_bytes();
 
@@ -77,7 +95,7 @@ impl CodiceFiscale {
         }
     }
 
-    fn birth_date_code(birth_date: NaiveDate, gender: Gender) -> String {
+    pub fn birth_date_code(birth_date: NaiveDate, gender: Gender) -> String {
         let year = birth_date.year();
         let month = MONTH_CODES[birth_date.month0() as usize];
         let mut day = birth_date.day();
@@ -89,7 +107,7 @@ impl CodiceFiscale {
         format!("{year:02}{month}{day:02}", year = year % 100)
     }
 
-    fn birth_place_code(city: CFString<&str>, province: CFString<&str>) -> Option<String> {
+    pub fn birth_place_code(city: CFString<&str>, province: CFString<&str>) -> Option<String> {
         let municipality = city.replace(' ', "-").to_ascii_lowercase();
         let province = province.to_ascii_uppercase();
 
@@ -102,7 +120,7 @@ impl CodiceFiscale {
         INACTIVE_PLACES.get(&key).map(|p| p.to_string())
     }
 
-    fn compute_checksum(partial_cf: &str) -> Result<char, GenerationError> {
+    pub fn compute_checksum(partial_cf: &str) -> Result<char, GenerationError> {
         if partial_cf.len() != 15 {
             return Err(GenerationError::IncorrectChecksumInputLength);
         }
@@ -151,7 +169,7 @@ impl CodiceFiscale {
         all_cfs
     }
 
-    fn decode_date(cf: &str) -> Result<(NaiveDate, Gender), ValidationError> {
+    pub fn decode_date(cf: &str) -> Result<(NaiveDate, Gender), ValidationError> {
         let bytes = &cf.as_bytes()[6..11];
 
         let mut year = ((bytes[0] - b'0') * 10 + (bytes[1] - b'0')) as i32;
@@ -178,18 +196,23 @@ impl CodiceFiscale {
         Ok((date, gender))
     }
 
-    fn decode_birth_place(cf: &str) -> Option<(&'static str, &'static str)> {
+    pub fn decode_birth_place(cf: &str) -> Option<(String, String)> {
         let bytes = &cf.as_bytes()[11..15];
         let code = std::str::from_utf8(bytes).unwrap();
 
         if let Some((&key, _)) = ACTIVE_PLACES.into_iter().find(|(_, &v)| v == code) {
-            return Some(key.split_once(',').unwrap());
+            return Some(Self::place_to_string(key));
         };
 
         INACTIVE_PLACES
             .into_iter()
             .find(|(_, &v)| v == code)
-            .and_then(|(&key, _)| key.split_once(','))
+            .map(|(&key, _)| Self::place_to_string(key))
+    }
+
+    fn place_to_string(place_key: &str) -> (String, String) {
+        let (city, province) = place_key.split_once(',').unwrap();
+        (city.to_owned(), province.to_owned())
     }
 }
 
@@ -243,6 +266,7 @@ pub enum ValidationError {
     InvalidMonthLetter,
     InvalidOmocodeLetter,
     NonAlphanumeric,
+    UnknownPlaceCode,
 }
 
 impl Error for GenerationError {}
@@ -264,6 +288,7 @@ impl std::fmt::Display for ValidationError {
             Self::InvalidOmocodeLetter => "codice fiscale contains invalid omocode letter",
             Self::InvalidMonthLetter => "the letter used for the month is invalid",
             Self::NonAlphanumeric => "characters must be alphabetical letters or numbers",
+            Self::UnknownPlaceCode => "could not find place associated with code in codice fiscale",
         };
         write!(f, "{message}")
     }
@@ -271,6 +296,8 @@ impl std::fmt::Display for ValidationError {
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
+
     use super::*;
 
     #[test]
@@ -612,8 +639,8 @@ mod tests {
 
     #[test]
     fn test_decode_active_place() {
-        let expected_city = "pedivigliano";
-        let expected_province = "CS";
+        let expected_city = "pedivigliano".to_owned();
+        let expected_province = "CS".to_owned();
 
         let res = CodiceFiscale::decode_birth_place("CCCFBA85D03G411P");
         assert_eq!(res, Some((expected_city, expected_province)));
@@ -621,8 +648,8 @@ mod tests {
 
     #[test]
     fn test_decode_inactive_place() {
-        let expected_city = "carano";
-        let expected_province = "TN";
+        let expected_city = "carano".to_owned();
+        let expected_province = "TN".to_owned();
 
         let res = CodiceFiscale::decode_birth_place("CCCFBA85D03B723P");
         assert_eq!(res, Some((expected_city, expected_province)));
@@ -632,5 +659,19 @@ mod tests {
     fn test_decode_unknown_place() {
         let res = CodiceFiscale::decode_birth_place("CCCFBA85D03C008P");
         assert_eq!(res, None);
+    }
+
+    #[test]
+    fn test_decode_data() {
+        let code = CodiceFiscale::from_str("GLNGCR56P10G224Q").unwrap();
+
+        let expected = DecodedData {
+            birth_date: NaiveDate::from_ymd_opt(1956, 9, 10).unwrap(),
+            gender: Gender::Male,
+            birth_place: "padova".into(),
+            birth_province: "PD".into(),
+        };
+
+        assert_eq!(code.decode().unwrap(), expected);
     }
 }

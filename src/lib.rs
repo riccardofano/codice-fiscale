@@ -11,7 +11,7 @@ pub enum Gender {
     Female,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Subject {
     pub first_name: CFString<String>,
     pub last_name: CFString<String>,
@@ -19,6 +19,14 @@ pub struct Subject {
     pub gender: Gender,
     pub birth_place: CFString<String>,
     pub birth_province: CFString<String>,
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct DecodedData {
+    pub birth_date: NaiveDate,
+    pub gender: Gender,
+    pub birth_place: String,
+    pub birth_province: String,
 }
 
 /// Returns all subsets the elements of an array excepts the empty set
