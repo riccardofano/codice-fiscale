@@ -33,6 +33,10 @@ static OMOCODE_SUBSETS: OnceLock<Vec<Vec<usize>>> = OnceLock::new();
 pub struct CodiceFiscale(String);
 
 impl CodiceFiscale {
+    pub fn encode(subject: &Subject) -> Result<Self, GenerationError> {
+        Self::try_from(subject)
+    }
+
     pub fn decode(&self) -> Result<DecodedData, ValidationError> {
         let code = self.normalize()?;
         let code = code.get();
@@ -76,14 +80,14 @@ impl CodiceFiscale {
         &self.0
     }
 
-    pub fn last_name_code(last_name: CFString<&str>) -> String {
+    pub fn encode_last_name(last_name: CFString<&str>) -> String {
         let consonants = last_name.to_ascii_uppercase().replace(VOWELS, "");
         let vowels = last_name.to_ascii_uppercase().replace(CONSONANTS, "");
 
         format!("{consonants}{vowels}XXX")[..3].to_owned()
     }
 
-    pub fn first_name_code(first_name: CFString<&str>) -> String {
+    pub fn encode_first_name(first_name: CFString<&str>) -> String {
         let consonants = first_name.to_ascii_uppercase().replace(VOWELS, "");
         let b = consonants.as_bytes();
 
@@ -95,7 +99,7 @@ impl CodiceFiscale {
         }
     }
 
-    pub fn birth_date_code(birth_date: NaiveDate, gender: Gender) -> String {
+    pub fn encode_birth_date(birth_date: NaiveDate, gender: Gender) -> String {
         let year = birth_date.year();
         let month = MONTH_CODES[birth_date.month0() as usize];
         let mut day = birth_date.day();
@@ -107,7 +111,7 @@ impl CodiceFiscale {
         format!("{year:02}{month}{day:02}", year = year % 100)
     }
 
-    pub fn birth_place_code(city: CFString<&str>, province: CFString<&str>) -> Option<String> {
+    pub fn encode_birth_place(city: CFString<&str>, province: CFString<&str>) -> Option<String> {
         let municipality = city.replace(' ', "-").to_ascii_lowercase();
         let province = province.to_ascii_uppercase();
 
@@ -237,11 +241,11 @@ impl TryFrom<&Subject> for CodiceFiscale {
     fn try_from(value: &Subject) -> Result<Self, Self::Error> {
         let mut output = String::with_capacity(16);
 
-        output.push_str(&Self::last_name_code(value.last_name.as_deref()));
-        output.push_str(&Self::first_name_code(value.first_name.as_deref()));
-        output.push_str(&Self::birth_date_code(value.birth_date, value.gender));
+        output.push_str(&Self::encode_last_name(value.last_name.as_deref()));
+        output.push_str(&Self::encode_first_name(value.first_name.as_deref()));
+        output.push_str(&Self::encode_birth_date(value.birth_date, value.gender));
 
-        let place_code = Self::birth_place_code(
+        let place_code = Self::encode_birth_place(
             value.birth_place.as_deref(),
             value.birth_province.as_deref(),
         )
@@ -303,62 +307,62 @@ mod tests {
     #[test]
     fn test_last_name_code_enough_consonants() {
         let name = CFString::new("Rossi").unwrap();
-        assert_eq!(&CodiceFiscale::last_name_code(name), "RSS");
+        assert_eq!(&CodiceFiscale::encode_last_name(name), "RSS");
     }
 
     #[test]
     fn test_last_name_code_vowels_needed() {
         let name = CFString::new("Bigi").unwrap();
-        assert_eq!(&CodiceFiscale::last_name_code(name), "BGI");
+        assert_eq!(&CodiceFiscale::encode_last_name(name), "BGI");
     }
 
     #[test]
     fn test_last_name_code_space_inside() {
         let name = CFString::new("De Rossi").unwrap();
-        assert_eq!(&CodiceFiscale::last_name_code(name), "DRS");
+        assert_eq!(&CodiceFiscale::encode_last_name(name), "DRS");
     }
 
     #[test]
     fn test_last_name_code_short() {
         let name = CFString::new("Yu").unwrap();
-        assert_eq!(&CodiceFiscale::last_name_code(name), "YUX");
+        assert_eq!(&CodiceFiscale::encode_last_name(name), "YUX");
     }
 
     #[test]
     fn test_first_name_consonants() {
         let name = CFString::new("Massimo").unwrap();
-        assert_eq!(&CodiceFiscale::first_name_code(name), "MSM");
+        assert_eq!(&CodiceFiscale::encode_first_name(name), "MSM");
     }
 
     #[test]
     fn test_first_name_vowels_needed() {
         let name = CFString::new("Mario").unwrap();
-        assert_eq!(&CodiceFiscale::first_name_code(name), "MRA");
+        assert_eq!(&CodiceFiscale::encode_first_name(name), "MRA");
     }
 
     #[test]
     fn test_first_name_space_inside() {
         let name = CFString::new("Maria Teresa").unwrap();
-        assert_eq!(&CodiceFiscale::first_name_code(name), "MTR");
+        assert_eq!(&CodiceFiscale::encode_first_name(name), "MTR");
     }
 
     #[test]
     fn test_first_name_short() {
         let name = CFString::new("Li").unwrap();
-        assert_eq!(&CodiceFiscale::first_name_code(name), "LIX");
+        assert_eq!(&CodiceFiscale::encode_first_name(name), "LIX");
     }
 
     #[test]
     fn test_first_name_super_short() {
         let name = CFString::new("W").unwrap();
-        assert_eq!(&CodiceFiscale::first_name_code(name), "WXX");
+        assert_eq!(&CodiceFiscale::encode_first_name(name), "WXX");
     }
 
     #[test]
     fn test_birth_date_code() {
         let birth_date = NaiveDate::from_ymd_opt(2024, 12, 31).unwrap();
 
-        let res = CodiceFiscale::birth_date_code(birth_date, Gender::Male);
+        let res = CodiceFiscale::encode_birth_date(birth_date, Gender::Male);
         assert_eq!(&res, "24T31");
     }
 
@@ -366,7 +370,7 @@ mod tests {
     fn test_birth_date_small_day() {
         let birth_date = NaiveDate::from_ymd_opt(2024, 12, 5).unwrap();
 
-        let res = CodiceFiscale::birth_date_code(birth_date, Gender::Male);
+        let res = CodiceFiscale::encode_birth_date(birth_date, Gender::Male);
         assert_eq!(&res, "24T05");
     }
 
@@ -374,14 +378,14 @@ mod tests {
     fn test_birth_date_female() {
         let birth_date = NaiveDate::from_ymd_opt(2024, 12, 5).unwrap();
 
-        let res = CodiceFiscale::birth_date_code(birth_date, Gender::Female);
+        let res = CodiceFiscale::encode_birth_date(birth_date, Gender::Female);
         assert_eq!(&res, "24T45");
     }
 
     #[test]
     fn test_birth_date_ends_with_0_something() {
         let birth_date = NaiveDate::from_ymd_opt(2003, 12, 6).unwrap();
-        let res = CodiceFiscale::birth_date_code(birth_date, Gender::Male);
+        let res = CodiceFiscale::encode_birth_date(birth_date, Gender::Male);
         assert_eq!(&res, "03T06");
     }
 
@@ -389,7 +393,7 @@ mod tests {
     fn test_birth_place() {
         let place = CFString::new("Abano").unwrap();
         let province = CFString::new("PD").unwrap();
-        let res = CodiceFiscale::birth_place_code(place, province);
+        let res = CodiceFiscale::encode_birth_place(place, province);
         assert_eq!(res.as_deref(), Some("A001"));
     }
 
@@ -397,7 +401,7 @@ mod tests {
     fn test_birth_place_not_found() {
         let place = CFString::new("I dont exist").unwrap();
         let province = CFString::new("PD").unwrap();
-        let res = CodiceFiscale::birth_place_code(place, province);
+        let res = CodiceFiscale::encode_birth_place(place, province);
         assert_eq!(res.as_deref(), None);
     }
 
