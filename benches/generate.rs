@@ -1,10 +1,11 @@
+use std::str::FromStr;
+
 use criterion::{criterion_group, criterion_main, BatchSize, Criterion};
 use rand::rngs::ThreadRng;
 use rand::seq::{IteratorRandom, SliceRandom};
 use rand::{thread_rng, Rng};
 
-use codice_fiscale::string::CFString;
-use codice_fiscale::{CodiceFiscale, Gender, NaiveDate, Subject, ACTIVE_PLACES};
+use codice_fiscale::{CFString, CodiceFiscale, Gender, NaiveDate, Subject, ACTIVE_PLACES};
 const GENDERS: [Gender; 2] = [Gender::Male, Gender::Female];
 #[rustfmt::skip]
 const ALLOWED_CHARS: [char; 27] = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',' '];
@@ -46,7 +47,7 @@ fn create_random_subject() -> Subject {
     }
 }
 
-fn bench(c: &mut Criterion) {
+fn bench_subjects(c: &mut Criterion) {
     c.bench_function("random subjects", |b| {
         b.iter_batched(
             create_random_subject,
@@ -58,5 +59,10 @@ fn bench(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, bench);
+fn bench_omocodes(c: &mut Criterion) {
+    let cf = CodiceFiscale::from_str("CCCFBA85D03L219P").unwrap();
+    c.bench_function("all omocodes", |b| b.iter(|| cf.all_omocodes()));
+}
+
+criterion_group!(benches, bench_subjects, bench_omocodes);
 criterion_main!(benches);

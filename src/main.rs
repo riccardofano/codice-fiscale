@@ -1,6 +1,6 @@
 use std::time::Instant;
 
-use codice_fiscale::{string::CFString, CodiceFiscale, Gender, NaiveDate, Subject};
+use codice_fiscale::{CFString, CodiceFiscale, Gender, NaiveDate, Subject};
 
 fn main() {
     let subject = Subject {
