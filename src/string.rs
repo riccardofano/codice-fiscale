@@ -1,4 +1,4 @@
-use std::ops::Deref;
+use std::{ops::Deref, str::FromStr};
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum CFStringError {
@@ -61,6 +61,14 @@ impl<S> Deref for CFString<S> {
 
     fn deref(&self) -> &Self::Target {
         &(self.0)
+    }
+}
+
+impl FromStr for CFString<String> {
+    type Err = CFStringError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Self::new(s.to_owned())
     }
 }
 
