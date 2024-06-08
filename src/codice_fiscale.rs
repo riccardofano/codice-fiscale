@@ -5,9 +5,7 @@ use chrono::Datelike;
 use chrono::NaiveDate;
 use chrono::Utc;
 
-use crate::DecodedData;
-
-use super::{all_subsets, CFString, Gender, Subject};
+use crate::{all_subsets, CFString, DecodedData, Gender, Subject};
 
 include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
 
@@ -216,7 +214,7 @@ impl CodiceFiscale {
 
     fn place_to_string(place_key: &str) -> (String, String) {
         let (city, province) = place_key.split_once(',').unwrap();
-        (city.to_owned(), province.to_owned())
+        (city.replace('-', " "), province.to_owned())
     }
 }
 
@@ -663,6 +661,15 @@ mod tests {
     fn test_decode_unknown_place() {
         let res = CodiceFiscale::decode_birth_place("CCCFBA85D03C008P");
         assert_eq!(res, None);
+    }
+
+    #[test]
+    fn test_decode_multiple_word_city() {
+        let expected_city = "abbadia lariana".to_owned();
+        let expected_province = "LC".to_owned();
+
+        let res = CodiceFiscale::decode_birth_place("CCCFBA85D03A005R");
+        assert_eq!(res, Some((expected_city, expected_province)));
     }
 
     #[test]

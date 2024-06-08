@@ -7,8 +7,10 @@ use rand::{thread_rng, Rng};
 
 use codice_fiscale::{CFString, CodiceFiscale, Gender, NaiveDate, Subject, ACTIVE_PLACES};
 const GENDERS: [Gender; 2] = [Gender::Male, Gender::Female];
-#[rustfmt::skip]
-const ALLOWED_CHARS: [char; 27] = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',' '];
+const ALLOWED_CHARS: [char; 27] = [
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+    'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ',
+];
 
 fn random_name(rng: &mut ThreadRng) -> String {
     let length = rng.gen_range(1..20);
