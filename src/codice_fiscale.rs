@@ -440,12 +440,12 @@ mod tests {
     #[test]
     fn test_encodes_complete_cf_1() {
         let subject = Subject {
-            first_name: CFString::new("Maria".into()).unwrap(),
-            last_name: CFString::new("Rossi".into()).unwrap(),
+            first_name: "Maria".try_into().unwrap(),
+            last_name: "Rossi".try_into().unwrap(),
             birth_date: NaiveDate::from_ymd_opt(1970, 1, 1).unwrap(),
             gender: Gender::Female,
-            birth_place: CFString::new("Milano".into()).unwrap(),
-            birth_province: CFString::new("Mi".into()).unwrap(),
+            birth_place: "Milano".try_into().unwrap(),
+            birth_province: "Mi".try_into().unwrap(),
         };
 
         assert_eq!(
@@ -457,12 +457,12 @@ mod tests {
     #[test]
     fn test_encodes_complete_cf_2() {
         let subject = Subject {
-            first_name: CFString::new("Giancarlo".into()).unwrap(),
-            last_name: CFString::new("Galan".into()).unwrap(),
+            first_name: "Giancarlo".try_into().unwrap(),
+            last_name: "Galan".try_into().unwrap(),
             birth_date: NaiveDate::from_ymd_opt(1956, 9, 10).unwrap(),
             gender: Gender::Male,
-            birth_place: CFString::new("Padova".into()).unwrap(),
-            birth_province: CFString::new("PD".into()).unwrap(),
+            birth_place: "Padova".try_into().unwrap(),
+            birth_province: "PD".try_into().unwrap(),
         };
 
         assert_eq!(

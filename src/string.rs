@@ -72,6 +72,14 @@ impl FromStr for CFString<String> {
     }
 }
 
+impl TryFrom<&str> for CFString<String> {
+    type Error = CFStringError;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        Self::new(value.to_owned())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
